@@ -1,0 +1,110 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+main {
+  height: 100%;
+  --tile-size: 32px;
+  --font-size: 24px;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+#counters {
+  display: flex;
+  justify-content: space-between;
+  > div {
+    background-color: #111;
+    border-radius: 10%;
+  }
+}
+
+#playarea {
+  max-height: 80vh;
+  max-width: 800px;
+  font-size: var(--font-size);
+  overflow: auto;
+  position: relative;
+  #column-nums {
+    position: relative;
+    top: 0;
+    left: var(--tile-size);
+    display: flex;
+    flex-direction: row;
+    height: var(--tile-size);
+    width: calc(100% - var(--tile-size));
+    > div {
+      height: var(--tile-size);
+      width: var(--tile-size);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+      position: relative;
+      &:not(:first-child)::after {
+        position: absolute;
+        content: " ";
+        bottom: 0;
+        left: 0;
+        height: calc(var(--tile-size) / 2);
+        width: 2px;
+        background-color: #000;
+      }
+    }
+  }
+
+  #playarea-bottom {
+    display: flex;
+    #row-nums {
+      display: flex;
+      flex-direction: column;
+      height: calc(100% - var(--tile-size));
+      width: var(--tile-size);
+      overflow: hidden;
+      > div {
+        height: var(--tile-size);
+        width: var(--tile-size);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        &:not(:first-child)::after {
+          position: absolute;
+          content: " ";
+          right: 0;
+          top: 0;
+          width: calc(var(--tile-size) / 2);
+          height: 2px;
+          background-color: #000;
+        }
+      }
+    }
+    #board {
+      height: calc(100% - var(--tile-size));
+      width: calc(100% - var(--tile-size));
+      border: 1px solid black;
+      > div {
+        display: flex;
+        > div {
+          height: var(--tile-size);
+          width: var(--tile-size);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border: 1px solid black;
+          flex-shrink: 0;
+          overflow: hidden;
+          &:not([data-marked="true"]) {
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+}
