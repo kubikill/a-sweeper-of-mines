@@ -1,18 +1,16 @@
 {
   "name": "macdows-minesweeper",
   "scripts": {
-    "start": "parcel serve ./src/index.html",
-    "build": "parcel build ./src/index.html",
+    "start": "parcel serve ./src/index.html --dist-dir ./test",
+    "build": "parcel build ./src/index.html --public-url ./",
     "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
     "@parcel/transformer-sass": "^2.0.0-beta.2",
     "parcel": "^2.0.0-beta.2"
   },
-  "description": "A reverse Minesweeper/monogram hybrid, based on the \"Mines\" minigame from Macdows 95.",
-  "version": "1.0.0",
-  "main": "./src/index.html",
   "dependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.13.0",
     "abab": "^2.0.5",
     "abortcontroller-polyfill": "^1.7.1",
     "acorn": "^6.4.2",
@@ -566,7 +564,5 @@
     "xmlchars": "^2.2.0",
     "xtend": "^4.0.2",
     "yallist": "^4.0.0"
-  },
-  "author": "",
-  "license": "ISC"
+  }
 }
