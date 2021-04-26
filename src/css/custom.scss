@@ -2,6 +2,10 @@
   box-sizing: border-box;
 }
 
+h2, p {
+  margin: 0;
+}
+
 html,
 body,
 main {
@@ -14,14 +18,38 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
   height: 100%;
 }
-#counters {
+#top-row-nav {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  width: 100%;
+  font-size: 20px;
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 36px;
+    width: 36px;
+    margin: 0 2px;
+  }
   > div {
-    background-color: #111;
-    border-radius: 10%;
+    display: inline-block;
+  }
+  #mine-counter, #timer {
+    width: 76px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 2px;
+    border: 1px black solid;
+    border-radius: 8px;
+    padding: 0 2px;
+  }
+  #mine-counter {
+    margin-left: 0;
+    padding: 0 4px;
   }
 }
 
@@ -31,6 +59,11 @@ main {
   font-size: var(--font-size);
   overflow: auto;
   position: relative;
+  border: 2px black solid;
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  user-select: none;
   #column-nums {
     position: relative;
     top: 0;
@@ -67,6 +100,7 @@ main {
       height: calc(100% - var(--tile-size));
       width: var(--tile-size);
       overflow: hidden;
+      flex-shrink: 0;
       > div {
         height: var(--tile-size);
         width: var(--tile-size);
@@ -87,7 +121,7 @@ main {
     }
     #board {
       height: calc(100% - var(--tile-size));
-      width: calc(100% - var(--tile-size));
+      position: relative;
       border: 1px solid black;
       > div {
         display: flex;
@@ -100,11 +134,131 @@ main {
           border: 1px solid black;
           flex-shrink: 0;
           overflow: hidden;
-          &:not([data-marked="true"]) {
+          &:not([data-clickable="false"]) {
             cursor: pointer;
+          }
+          &.wrong-tile {
+            background-color: #F00A;
           }
         }
       }
+      &.no-input > div > div {
+        cursor: initial !important;
+      }
     }
+  }
+  #win-overlay,
+  #lose-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    visibility: hidden;
+    background-color: #0006;
+    color: #fff;
+    transition: opacity 0.5s;
+    opacity: 0;
+    &.visible {
+      visibility: visible;
+      opacity: 1;
+      .modal-main {
+        top: 0px;
+      }
+    }
+    &.fade {
+      animation: fade 0.5s ease;
+      visibility: hidden;
+      .modal-main {
+        animation: slide-out 0.5s;
+      }
+    }
+  }
+  #game-finished-icon {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    height: 32px;
+    width: 32px;
+  }
+}
+
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.5s;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #000A;
+  &.visible {
+    visibility: visible;
+    opacity: 1;
+    .modal-main {
+      top: 0px;
+    }
+  }
+  &.fade {
+    animation: fade 0.5s ease;
+    visibility: hidden;
+    .modal-main {
+      animation: slide-out 0.5s;
+    }
+  }
+  .modal-main {
+    position: relative;
+    transition: top 0.5s;
+    top: 50px;
+    .modal-close {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+  }
+}
+
+#foobar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 2px;
+}
+
+@keyframes fade {
+  0% {
+    opacity: 1;
+    visibility: visible;
+  }
+  99.9% {
+    opacity: 0;
+    visibility: visible;
+  }
+  100% {
+    visibility: hidden;
+  }
+}
+
+@keyframes slide-out {
+  0% {
+    opacity: 1;
+    top: 0px;
+  }
+  99.9% {
+    opacity: 0;
+    top: -50px;
+    visibility: visible;
+  }
+  100% {
+    visibility: hidden;
   }
 }
