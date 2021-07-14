@@ -71,6 +71,7 @@
 		minesLeft: 20,
 		hints: 1,
 		hintMode: false,
+		clickSwap: false,
 		time: {
 			minutes: 0,
 			seconds: 0,
@@ -194,7 +195,6 @@
 		}
 
 		// Assign numbers to each tile, and count mines in each row and column
-		console.log(gameVars);
 		for (let row in board) {
 			for (let column in board[row]) {
 				countNearbyMines(parseInt(row), parseInt(column));
@@ -270,13 +270,13 @@
 	let markMode = "none";
 
 	function tileMark(row, column) {
-		console.log(markMode);
 		if (gameVars.state == "underway" && !board[row][column].uncovered) {
 			if (!board[row][column].markedAsEmpty) {
 				if (markMode == "none") {
 					markMode = "mark";
 				}
 				if (markMode == "mark") {
+					console.log("marking");
 					board[row][column].markedAsEmpty = true;
 					getTileElement(row, column).innerHTML = '<i class="icon-flag"></i>';
 				}
@@ -285,6 +285,7 @@
 					markMode = "remove";
 				}
 				if (markMode == "remove") {
+					console.log("removing");
 					board[row][column].markedAsEmpty = false;
 					getTileElement(row, column).innerHTML = "";
 				}
@@ -419,29 +420,49 @@
 		);
 
 		for (let tile of DOM.playarea.board.tiles) {
-			tile.addEventListener("mousedown", (evt) => {
-				switch (evt.which) {
-					case 1:
-						tileClick(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
-						break;
-					case 3:
+			tile.addEventListener("pointerdown", evt => {
+				if (gameVars.clickSwap) {
+					if (evt.button == 0) {
 						tileMark(parseInt(tile.dataset.row), parseInt(tile.dataset.column), true);
-						break;
+					}
+				} else {
+					if (evt.button == 2) {
+						tileMark(parseInt(tile.dataset.row), parseInt(tile.dataset.column), true);
+					}
 				}
+				evt.target.releasePointerCapture(evt.pointerId);
+			})
+			tile.addEventListener("pointerup", (evt) => {
+				if (gameVars.clickSwap) {
+					if (evt.button == 2) {
+						tileClick(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
+					}
+				} else {
+					if (evt.button == 0) {
+						tileClick(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
+					}
+				}
+				markMode = "none";
 			});
 			tile.addEventListener("contextmenu", (evt) => {
 				evt.preventDefault();
 				return false;
 			});
-			tile.addEventListener("mouseenter", (evt) => {
-				if (evt.which == 3) {
-					tileMark(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
+			tile.addEventListener("pointerenter", (evt) => {
+				if (gameVars.clickSwap) {
+					if (evt.buttons == 1 || evt.pointerType != "mouse") {
+						tileMark(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
+					}
+				} else {
+					if (evt.buttons == 2) {
+						tileMark(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
+					}
 				}
 			});
 		}
 	}
 
-	document.body.addEventListener("mouseup", () => {
+	document.body.addEventListener("pointerup", () => {
 		markMode = "none";
 	})
 
@@ -467,10 +488,9 @@
 		DOM.nav.timer.minutes.innerHTML = DOM.nav.timer.seconds.innerHTML = "00";
 		DOM.playarea.board.container.classList.remove("no-input");
 		DOM.nav.mineCounter.innerHTML = gameVars.minesLeft = gameVars.board.numOfMines;
-		console.log(gameVars);
 	}
 
-	DOM.nav.newGameBtn.addEventListener("click", () => {
+	DOM.nav.newGameBtn.addEventListener("click", evt => {
 		newGame();
 	});
 
@@ -634,8 +654,27 @@
 		}
 	})
 
+	DOM.nav.markSwapBtn.addEventListener("click", () => {
+		gameVars.clickSwap = !gameVars.clickSwap;
+		if (gameVars.clickSwap) {
+			DOM.nav.markSwapBtn.innerHTML = '<i class="icon-flag"></i>';
+			DOM.playarea.board.container.classList.add("no-scroll");
+		} else {
+			DOM.nav.markSwapBtn.innerHTML = '<i class="icon-mine"></i>';
+			DOM.playarea.board.container.classList.remove("no-scroll");
+		}
+	})
+
+	const mobileQuery = window.matchMedia('only screen and (max-width: 767px)');
+	mobileQuery.addEventListener("change", evt => {
+		if (!evt.matches) {
+			gameVars.clickSwap = false;
+			DOM.playarea.board.container.classList.remove("no-scroll");
+			DOM.nav.markSwapBtn.innerHTML = '<i class="icon-mine"></i>'
+		}
+	})
+
 	function calculateMaxMines() {
-		console.log(settings);
 		let maxMines = Math.floor(settings.board.columns * settings.board.rows / 2);
 		if (maxMines < 25) {
 			maxMines = 25;

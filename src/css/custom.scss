@@ -176,6 +176,13 @@ main {
     width: calc(100% - var(--tile-size));
     overflow: auto;
 
+    &.no-scroll {
+      touch-action: none;
+      * {
+        touch-action: none;
+      }
+    }
+
     &::-webkit-scrollbar-track {
       border-radius: 10px;
       background-color: #00000011;
