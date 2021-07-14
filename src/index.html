@@ -3,11 +3,11 @@
 
 <head>
 	<meta charset="utf-8" />
-	<title>Macdows Minesweeper v0.1</title>
+	<title>A Sweeper of Mines v0.1</title>
 	<meta name="description"
-		content='A reverse Minesweeper/nonogram hybrid, based on the "Mines" minigame from Macdows 95.' />
+		content='A reverse Minesweeper/nonogram hybrid.' />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<meta property="og:title" content="Macdows Minesweeper" />
+	<meta property="og:title" content="A Sweeper of Mines" />
 	<meta property="og:type" content="" />
 	<meta property="og:url" content="" />
 	<meta property="og:image" content="" />
@@ -45,7 +45,7 @@
 			<button id="howtoplay-btn" class="desktop-only" data-modalopen="#howtoplay-modal">
 				<i class="icon-book"></i>
 			</button>
-			<button id="hint-btn"><i class="icon-question-circle"></i></button>
+			<button id="hint-btn" data-hints="0"><i class="icon-question-circle"></i></button>
 			<button id="mark-btn" class="mobile-only">
 				<i class="icon-flag"></i>
 			</button>
@@ -115,14 +115,14 @@
 						<option value="custom">Custom</option>
 					</select>
 					<div id="settings-customBoard">
-						<label class="settings-customBoardOnly">Width/height:</label>
-						<span class="settings-customBoardOnly">
-							<input id="settings-boardWidth" type="number">
+						<label>Width/height:</label>
+						<span>
+							<input id="settings-boardWidth" type="number" min="5" value="10">
 							x
-							<input id="settings-boardHeight" type="number">
+							<input id="settings-boardHeight" type="number" min="5" value="10">
 						</span>
-						<label class="settings-customBoardOnly">Number of mines:</label>
-						<input class="settings-customBoardOnly" size="1" id="settings-mineNum" type="number">
+						<label>Number of mines:</label>
+						<div><input size="1" id="settings-mineNum" type="number" min="2" value="10"> Max: <span id="settings-maxMines">50</span></div>
 					</div>
 					<div id="settings-applywarning">
 						Board changes will apply in the next game.

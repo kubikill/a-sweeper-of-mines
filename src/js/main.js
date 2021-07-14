@@ -14,6 +14,8 @@
 				minutes: byId("timer-minutes"),
 				seconds: byId("timer-seconds"),
 			},
+			hintBtn: byId("hint-btn"),
+			markSwapBtn: byId("mark-btn")
 		},
 		playarea: {
 			columnNums: byId("column-nums"),
@@ -44,7 +46,12 @@
 				boardSize: byId("settings-boardSize"),
 				customBoard: {
 					container: byId("settings-customBoard"),
+					rows: byId("settings-boardHeight"),
+					columns: byId("settings-boardWidth"),
+					numOfMines: byId("settings-mineNum"),
+					maxMines: byId("settings-maxMines")
 				},
+				boardApplyWarning: byId("settings-applywarning"),
 				tileSize: byId("settings-tileSize"),
 			},
 		},
@@ -62,6 +69,8 @@
 	const gameVars = {
 		state: "initial", // 3 states available: initial (new game started, waiting for player to uncover first tile), underway (game in progress), finished (game won or lost, no input allowed on board)
 		minesLeft: 20,
+		hints: 1,
+		hintMode: false,
 		time: {
 			minutes: 0,
 			seconds: 0,
@@ -83,6 +92,7 @@
 			numOfMines: 20,
 		},
 		boardSize: "small",
+		maxMines: 50
 	};
 
 	const boardSizes = {
@@ -184,6 +194,7 @@
 		}
 
 		// Assign numbers to each tile, and count mines in each row and column
+		console.log(gameVars);
 		for (let row in board) {
 			for (let column in board[row]) {
 				countNearbyMines(parseInt(row), parseInt(column));
@@ -240,7 +251,18 @@
 				xyzzyInit();
 			}
 		} else if (gameVars.state == "underway") {
-			uncoverTile(row, column);
+			if (gameVars.hintMode == true) {
+				uncoverTile(row, column, true);
+				gameVars.hints -= 1;
+				DOM.nav.hintBtn.dataset.hints = gameVars.hints;
+				if (gameVars.hints <= 0) {
+					DOM.nav.hintBtn.classList.remove("hint-active");
+					DOM.nav.hintBtn.classList.add("hint-disabled");
+					gameVars.hintMode = false;
+				}
+			} else {
+				uncoverTile(row, column);
+			}
 			DOM.nav.mineCounter.innerHTML = gameVars.minesLeft;
 		}
 	}
@@ -256,7 +278,7 @@
 				}
 				if (markMode == "mark") {
 					board[row][column].markedAsEmpty = true;
-					getTileElement(row, column).innerHTML = "X";
+					getTileElement(row, column).innerHTML = '<i class="icon-flag"></i>';
 				}
 			} else {
 				if (markMode == "none") {
@@ -324,13 +346,10 @@
 		for (let row in board) {
 			for (let column in board[row]) {
 				if (board[row][column].hasMine && !board[row][column].uncovered) {
-					board[row][column].markedAsEmpty = false;
-					uncoverTile(parseInt(row), parseInt(column), false, true);
-				} else if (
-					!board[row][column].hasMine &&
-					board[row][column].numOfNearbyMines == 0
-				) {
-					getTileElement(row, column).innerHTML = "#";
+					getTileElement(row, column).innerHTML = "<i class='icon-mine'></i>";
+					getTileElement(row, column).dataset.clickable = "false";
+				} else {
+					getTileElement(row, column).innerHTML = board[row][column].numOfNearbyMines;
 				}
 			}
 		}
@@ -433,6 +452,12 @@
 		} else {
 			Object.assign(gameVars.board, settings.board);
 		}
+		DOM.modals.settings.boardApplyWarning.style.removeProperty("display");
+		gameVars.hints = 1 + Math.floor(gameVars.board.columns * gameVars.board.rows / 400);
+		gameVars.hintMode = false;
+		DOM.nav.hintBtn.dataset.hints = gameVars.hints;
+		DOM.nav.hintBtn.classList.remove("hint-active");
+		DOM.nav.hintBtn.classList.remove("hint-disabled");
 		createEmptyBoard();
 		displayBoard();
 		displayEmptyBorderNums();
@@ -442,13 +467,21 @@
 		DOM.nav.timer.minutes.innerHTML = DOM.nav.timer.seconds.innerHTML = "00";
 		DOM.playarea.board.container.classList.remove("no-input");
 		DOM.nav.mineCounter.innerHTML = gameVars.minesLeft = gameVars.board.numOfMines;
+		console.log(gameVars);
 	}
 
 	DOM.nav.newGameBtn.addEventListener("click", () => {
 		newGame();
 	});
 
-	document.querySelectorAll("[data-modalopen]").forEach((el) => {
+	DOM.nav.hintBtn.addEventListener("click", () => {
+		if (gameVars.hints >= 1) {
+			DOM.nav.hintBtn.classList.toggle("hint-active");
+			gameVars.hintMode = !gameVars.hintMode;
+		}
+	})
+
+	document.querySelectorAll("[data-modalopen]").forEach(el => {
 		el.addEventListener("click", () => {
 			DOM.modals.container.classList.add("visible");
 			DOM.modals.container.classList.remove("fade");
@@ -456,7 +489,7 @@
 			document.querySelector(el.dataset.modalopen).classList.remove("fade");
 		});
 	});
-	document.querySelectorAll(".modal-close").forEach((el) => {
+	document.querySelectorAll(".modal-close").forEach(el => {
 		el.addEventListener("click", () => {
 			DOM.modals.container.classList.add("fade");
 			DOM.modals.container.classList.remove("visible");
@@ -464,6 +497,13 @@
 			el.parentNode.parentNode.classList.remove("visible");
 		});
 	});
+	
+	DOM.modals.settings.container.querySelector(".modal-close").addEventListener("click", () => {
+		if (gameVars.state != "underway") {
+			newGame();
+		}
+	})
+
 	document.querySelectorAll(".modal").forEach(el => {
 		el.addEventListener("click", evt => {
 			if (evt.target === evt.currentTarget) {
@@ -474,6 +514,11 @@
 			}
 		})
 	})
+	DOM.modals.settings.container.addEventListener("click", () => {
+		if (gameVars.state != "underway") {
+			newGame();
+		}
+	})
 	DOM.modals.menu.btns.querySelectorAll("button").forEach((el) => {
 		el.addEventListener("click", () => {
 			DOM.modals.menu.container.classList.add("fade");
@@ -482,10 +527,11 @@
 	});
 
 	DOM.playarea.board.container.addEventListener("scroll", () => {
-		console.log(`x: ${DOM.playarea.board.container.scrollLeft}, y: ${DOM.playarea.board.container.scrollTop}`);
 		DOM.playarea.rowNums.scroll(0, DOM.playarea.board.container.scrollTop);
 		DOM.playarea.columnNums.scroll(DOM.playarea.board.container.scrollLeft, 0);
-	}, {passive: true})
+	}, {
+		passive: true
+	})
 
 	DOM.playarea.winOverlay.newGameBtn.addEventListener("click", () => {
 		newGame();
@@ -509,14 +555,102 @@
 
 	// Settings event listeners
 
-	DOM.modals.settings.boardSize.addEventListener("change", el => {
-		settings.boardSize = el.target.value;
+	DOM.modals.settings.boardSize.addEventListener("change", evt => {
+		settings.boardSize = evt.target.value;
+		if (gameVars.state == "underway") {
+			DOM.modals.settings.boardApplyWarning.style.display = "block";
+		}
 	})
 
+	const numbersOnlyRegex = /^[0-9]+$/g;
+
+	DOM.modals.settings.customBoard.columns.addEventListener("input", evt => {
+		evt.target.value = evt.target.value.match(numbersOnlyRegex);
+		if (!evt.target.value) {
+			settings.board.columns = 5;
+		} else if (evt.target.value > 100 && !customBoardUnlimited) {
+			evt.target.value = 100;
+			settings.board.columns = parseInt(evt.target.value);
+		} else {
+			settings.board.columns = parseInt(evt.target.value);
+		}
+		calculateMaxMines();
+		if (gameVars.state == "underway") {
+			DOM.modals.settings.boardApplyWarning.style.display = "block";
+		}
+	})
+	DOM.modals.settings.customBoard.columns.addEventListener("blur", evt => {
+		if (!evt.target.value || evt.target.value < 5) {
+			evt.target.value = 5;
+		} else if (evt.target.value > 100 && !customBoardUnlimited) {
+			evt.target.value = 100;
+		}
+		settings.board.columns = parseInt(evt.target.value);
+		calculateMaxMines();
+		if (gameVars.state == "underway") {
+			DOM.modals.settings.boardApplyWarning.style.display = "block";
+		}
+	})
+
+	DOM.modals.settings.customBoard.rows.addEventListener("input", evt => {
+		evt.target.value = evt.target.value.match(numbersOnlyRegex);
+		if (evt.target.value == "") {
+			settings.board.rows = 5;
+		} else if (evt.target.value > 100 && !customBoardUnlimited) {
+			evt.target.value = 100;
+			settings.board.rows = parseInt(evt.target.value);
+		} else {
+			settings.board.rows = parseInt(evt.target.value);
+		}
+		calculateMaxMines();
+		if (gameVars.state == "underway") {
+			DOM.modals.settings.boardApplyWarning.style.display = "block";
+		}
+	})
+	DOM.modals.settings.customBoard.rows.addEventListener("blur", evt => {
+		if (evt.target.value == "" || evt.target.value < 5) {
+			evt.target.value = 5;
+		} else if (evt.target.value > 100 && !customBoardUnlimited) {
+			evt.target.value = 100;
+		}
+		settings.board.rows = parseInt(evt.target.value);
+		calculateMaxMines();
+		if (gameVars.state == "underway") {
+			DOM.modals.settings.boardApplyWarning.style.display = "block";
+		}
+	})
+
+	DOM.modals.settings.customBoard.numOfMines.addEventListener("input", evt => {
+		if (evt.target.value > settings.maxMines) {
+			evt.target.value = settings.maxMines;
+		} else if (evt.target.value < 2 || !evt.target.value) {
+			evt.target.value = 2;
+		}
+		settings.board.numOfMines = parseInt(evt.target.value);
+		if (gameVars.state == "underway") {
+			DOM.modals.settings.boardApplyWarning.style.display = "block";
+		} else {
+			gameVars.board.numOfMines = parseInt(evt.target.value);
+		}
+	})
+
+	function calculateMaxMines() {
+		console.log(settings);
+		let maxMines = Math.floor(settings.board.columns * settings.board.rows / 2);
+		if (maxMines < 25) {
+			maxMines = 25;
+		}
+		DOM.modals.settings.customBoard.maxMines.innerHTML = settings.maxMines = maxMines;
+		if (DOM.modals.settings.customBoard.numOfMines.value > settings.maxMines) {
+			DOM.modals.settings.customBoard.numOfMines.value = settings.maxMines;
+		}
+		settings.board.numOfMines = parseInt(DOM.modals.settings.customBoard.numOfMines.value);
+	}
+
 	// Handle showing custom board sizes
-	DOM.modals.settings.boardSize.addEventListener("change", el => {
+	DOM.modals.settings.boardSize.addEventListener("change", evt => {
 		DOM.modals.settings.customBoard.container.style.height = `${DOM.modals.settings.customBoard.container.scrollHeight}px`;
-		if (el.target.value == "custom") {
+		if (evt.target.value == "custom") {
 			DOM.modals.settings.customBoard.container.classList.add("open");
 			DOM.modals.settings.customBoard.container.addEventListener("transitionend", () => {
 				DOM.modals.settings.customBoard.container.style.removeProperty("height");
@@ -533,11 +667,17 @@
 
 	let root = document.documentElement;
 
-	DOM.modals.settings.tileSize.addEventListener("input", el => {
-		root.style.setProperty('--tile-size', `${el.target.value}px`);
+	DOM.modals.settings.tileSize.addEventListener("input", evt => {
+		root.style.setProperty('--tile-size', `${evt.target.value}px`);
 	})
 
 	newGame();
+
+	const urlParams = new URLSearchParams(window.location.search);
+	let customBoardUnlimited = false;
+	if (urlParams.has('customBoardUnlimited')) {
+	    bulkUnlimited = true;
+	}
 
 	// Value Bubbles for Range Inputs
 	// https://codepen.io/chriscoyier/pen/eYNQyPe

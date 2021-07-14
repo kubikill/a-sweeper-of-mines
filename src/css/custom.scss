@@ -7,6 +7,14 @@ p {
   margin: 0;
 }
 
+input[type="number"] {
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+}
+
 :root {
   --tile-size: 32px;
   --font-size: 24px;
@@ -43,6 +51,20 @@ main {
     height: 36px;
     width: 36px;
     margin: 0 2px;
+    appearance: none;
+    border: 1px solid #767676;
+    background-color: #EFEFEF;
+    border-radius: 2px;
+
+    &:hover:not(.hint-disabled) {
+      border-color: #4F4F4F;
+      background-color: #E5E5E5;
+    }
+
+    &:active:not(.hint-disabled) {
+      border-color: #8D8D8D;
+      background-color: #F5F5F5;
+    }
   }
 
   >div {
@@ -456,8 +478,42 @@ hr {
 #settings-applywarning {
   text-align: center;
   font-weight: 700;
+  display: none;
 }
 
 #settings-modal input:not([type="range"]) {
   max-width: 100px;
+}
+
+@media only screen and (max-width: 767px) {
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .mobile-only {
+    display: none !important;
+  }
+}
+
+#hint-btn {
+  position: relative;
+
+  &.hint-active {
+    color: #34bdeb;
+  }
+
+  &.hint-disabled {
+    background-color: #aaa;
+  }
+
+  &::after {
+    content: attr(data-hints);
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    line-height: 10px;
+    font-size: 13px;
+  }
 }
