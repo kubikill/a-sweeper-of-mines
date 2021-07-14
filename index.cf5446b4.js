@@ -1,0 +1,2 @@
+!function(){"use strict";function n(n){return document.getElementById(n)}n("menu-btn"),n("settings-btn"),n("newgame-btn"),document.querySelector("#mine-counter > span"),n("timer-minutes"),n("timer-seconds"),n("column-nums"),n("row-nums"),n("board"),n("win-overlay"),n("win-new-game-btn"),n("win-view-board-btn"),n("lose-overlay"),n("lose-new-game-btn"),n("lose-view-board-btn"),n("modals"),n("menu-modal"),n("menu-modal-btns"),n("settings-modal")}();
+//# sourceMappingURL=index.cf5446b4.js.map
