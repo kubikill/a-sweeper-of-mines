@@ -524,3 +524,18 @@ hr {
     font-size: 13px;
   }
 }
+
+#markCircle {
+  position: absolute;
+  pointer-events: none;
+
+  .progress-ring__circle {
+    // axis compensation
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+  }
+
+  &.hold .progress-ring__circle {
+    transition: 0.4s stroke-dashoffset linear;
+  }
+}

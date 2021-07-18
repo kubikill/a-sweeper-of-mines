@@ -55,6 +55,8 @@
 				tileSize: byId("settings-tileSize"),
 			},
 		},
+		markCircleDiv: byId("markCircle"),
+		markCircle: document.querySelector("#markCircle circle"),
 	};
 
 	let board = [];
@@ -155,6 +157,19 @@
 	};
 
 	let clockInterval;
+
+	// Mark circle
+
+	let radius = DOM.markCircle.r.baseVal.value;
+	let circumference = radius * 2 * Math.PI;
+
+	DOM.markCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+	DOM.markCircle.style.strokeDashoffset = `${circumference}`;
+
+	function setProgress(percent) {
+		const offset = circumference - percent / 100 * circumference;
+		DOM.markCircle.style.strokeDashoffset = offset;
+	}
 
 	function createEmptyBoard() {
 		board = [];
@@ -405,6 +420,10 @@
 		DOM.playarea.columnNums.innerHTML = html;
 	}
 
+	let multiTouch = false;
+	let markCircleTimeout;
+	let markTouch = false;
+
 	function displayBoard() {
 		let html = "";
 		for (let row in board) {
@@ -421,48 +440,76 @@
 
 		for (let tile of DOM.playarea.board.tiles) {
 			tile.addEventListener("pointerdown", evt => {
-				if (gameVars.clickSwap) {
-					if (evt.button == 0) {
-						tileMark(parseInt(tile.dataset.row), parseInt(tile.dataset.column), true);
-					}
+				if (!evt.isPrimary || multiTouch) {
+					multiTouch = true;
+					return;
+				} else if (evt.button == 2) {
+					tileMark(parseInt(tile.dataset.row), parseInt(tile.dataset.column), true);
 				} else {
-					if (evt.button == 2) {
-						tileMark(parseInt(tile.dataset.row), parseInt(tile.dataset.column), true);
-					}
+					markCircleTimeout = setTimeout(() => {
+						DOM.markCircleDiv.classList.add("hold");
+						setProgress(100);
+						DOM.markCircleDiv.style.top = `${evt.clientY - 80}px`;
+						DOM.markCircleDiv.style.left = `${evt.clientX - 80}px`;
+						markCircleTimeout = setTimeout(() => {
+							DOM.markCircle.style.stroke = "#0007";
+							markTouch = true;
+							DOM.playarea.board.container.style.touchAction = "none";
+							tileMark(parseInt(tile.dataset.row), parseInt(tile.dataset.column))
+						}, 400)
+					}, 300)
 				}
 				evt.target.releasePointerCapture(evt.pointerId);
 			})
 			tile.addEventListener("pointerup", (evt) => {
-				if (gameVars.clickSwap) {
-					if (evt.button == 2) {
-						tileClick(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
-					}
-				} else {
-					if (evt.button == 0) {
-						tileClick(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
-					}
+				if (!evt.isPrimary) {
+					return;
+				} else if (evt.isPrimary && multiTouch) {
+					multiTouch = false;
+					return;
 				}
-				markMode = "none";
+				if (!markTouch && evt.button == 0) {
+					tileClick(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
+				}
+				clearTimeout(markCircleTimeout);
 			});
 			tile.addEventListener("contextmenu", (evt) => {
 				evt.preventDefault();
 				return false;
 			});
+			tile.addEventListener("pointermove", evt => {
+				if (!evt.isPrimary) {
+					return;
+				}
+				DOM.markCircleDiv.style.top = `${evt.clientY - 80}px`;
+				DOM.markCircleDiv.style.left = `${evt.clientX - 80}px`;
+			})
 			tile.addEventListener("pointerenter", (evt) => {
-				if (gameVars.clickSwap) {
-					if (evt.buttons == 1 || evt.pointerType != "mouse") {
-						tileMark(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
-					}
-				} else {
-					if (evt.buttons == 2) {
-						tileMark(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
-					}
+				if (!evt.isPrimary) {
+					return;
+				}
+				if (markTouch || evt.buttons == 2) {
+					tileMark(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
 				}
 			});
+			tile.addEventListener("pointercancel", evt => {
+				DOM.markCircleDiv.classList.remove("hold");
+				DOM.markCircle.style.stroke = "#000F";
+				setProgress(0);
+				clearTimeout(markCircleTimeout);
+				markTouch = false;
+				markMode = "none";
+			})
 		}
 	}
 
 	document.body.addEventListener("pointerup", () => {
+		DOM.markCircleDiv.classList.remove("hold");
+		DOM.markCircle.style.stroke = "#000F";
+		setProgress(0);
+		markTouch = false;
+		DOM.playarea.board.container.style.removeProperty("touch-action");
+		clearTimeout(markCircleTimeout);
 		markMode = "none";
 	})
 
@@ -517,7 +564,7 @@
 			el.parentNode.parentNode.classList.remove("visible");
 		});
 	});
-	
+
 	DOM.modals.settings.container.querySelector(".modal-close").addEventListener("click", () => {
 		if (gameVars.state != "underway") {
 			newGame();
@@ -715,8 +762,9 @@
 	const urlParams = new URLSearchParams(window.location.search);
 	let customBoardUnlimited = false;
 	if (urlParams.has('customBoardUnlimited')) {
-	    bulkUnlimited = true;
+		bulkUnlimited = true;
 	}
+
 
 	// Value Bubbles for Range Inputs
 	// https://codepen.io/chriscoyier/pen/eYNQyPe
