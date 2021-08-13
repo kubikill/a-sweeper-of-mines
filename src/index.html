@@ -25,7 +25,7 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<script>
 		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.register('./sw.js');
+			navigator.serviceWorker.register(new URL("./sw.js"));
 		};
 	</script>
 	<link rel="preload" href="./css/icons.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
