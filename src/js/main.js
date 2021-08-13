@@ -15,7 +15,8 @@
 				seconds: byId("timer-seconds"),
 			},
 			hintBtn: byId("hint-btn"),
-			markSwapBtn: byId("mark-btn")
+			mineBtn: byId("mine-btn"),
+			markBtn: byId("mark-btn")
 		},
 		playarea: {
 			columnNums: byId("column-nums"),
@@ -26,11 +27,14 @@
 			},
 			winOverlay: {
 				container: byId("win-overlay"),
+				time: byId("win-time"),
+				newBestTime: byId("new-best-time"),
 				newGameBtn: byId("win-new-game-btn"),
 				viewBoardBtn: byId("win-view-board-btn"),
 			},
 			loseOverlay: {
 				container: byId("lose-overlay"),
+				minesLeft: byId("lose-mines-left"),
 				newGameBtn: byId("lose-new-game-btn"),
 				viewBoardBtn: byId("lose-view-board-btn"),
 			},
@@ -53,10 +57,24 @@
 				},
 				boardApplyWarning: byId("settings-applywarning"),
 				tileSize: byId("settings-tileSize"),
+				theme: byId("settings-theme")
 			},
-		},
-		markCircleDiv: byId("markCircle"),
-		markCircle: document.querySelector("#markCircle circle"),
+			statistics: {
+				select: byId("stats-select"),
+				gamesPlayed: byId("stats-gamesplayed"),
+				gamesWon: byId("stats-gameswon"),
+				gamesLost: byId("stats-gameslost"),
+				winPercent: byId("stats-winpercent"),
+				bestTime: byId("stats-besttime"),
+				longestWinningStreak: byId("stats-longestwinstreak"),
+				longestLosingStreak: byId("stats-longestlosestreak"),
+				currentStreak: byId("stats-currentstreak")
+			},
+			newGameWarning: {
+				container: byId("newgamewarning-modal"),
+				confirm: byId("newgamewarning-confirm")
+			}
+		}
 	};
 
 	let board = [];
@@ -73,11 +91,9 @@
 		minesLeft: 20,
 		hints: 1,
 		hintMode: false,
+		markMode: "none",
 		clickSwap: false,
-		time: {
-			minutes: 0,
-			seconds: 0,
-		},
+		timeStart: null,
 		board: {
 			rows: 10,
 			columns: 10,
@@ -95,7 +111,9 @@
 			numOfMines: 20,
 		},
 		boardSize: "small",
-		maxMines: 50
+		maxMines: 50,
+		tileSize: 32,
+		theme: "auto"
 	};
 
 	const boardSizes = {
@@ -114,7 +132,7 @@
 			columns: 20,
 			numOfMines: 90
 		},
-		verylarge: {
+		veryLarge: {
 			rows: 30,
 			columns: 30,
 			numOfMines: 200
@@ -126,50 +144,50 @@
 			// Games won/lost/played, best time, longest winning/losing streaks, current streak
 			gamesWon: 0,
 			gamesLost: 0,
-			bestTime: "",
+			bestTime: null,
 			longestWinningStreak: 0,
 			longestLosingStreak: 0,
-			currentStreak: 0
+			currentStreak: 0,
+			streakMode: "N/A"
 		},
 		medium: {
 			gamesWon: 0,
 			gamesLost: 0,
-			bestTime: "",
+			bestTime: null,
 			longestWinningStreak: 0,
 			longestLosingStreak: 0,
-			currentStreak: 0
+			currentStreak: 0,
+			streakMode: "N/A"
 		},
 		large: {
 			gamesWon: 0,
 			gamesLost: 0,
-			bestTime: "",
+			bestTime: null,
 			longestWinningStreak: 0,
 			longestLosingStreak: 0,
-			currentStreak: 0
+			currentStreak: 0,
+			streakMode: "N/A"
+		},
+		veryLarge: {
+			gamesWon: 0,
+			gamesLost: 0,
+			bestTime: null,
+			longestWinningStreak: 0,
+			longestLosingStreak: 0,
+			currentStreak: 0,
+			streakMode: "N/A"
 		},
 		custom: {
 			gamesWon: 0,
 			gamesLost: 0,
 			longestWinningStreak: 0,
 			longestLosingStreak: 0,
-			currentStreak: 0
+			currentStreak: 0,
+			streakMode: "N/A"
 		},
 	};
 
 	let clockInterval;
-
-	// Mark circle
-
-	let radius = DOM.markCircle.r.baseVal.value;
-	let circumference = radius * 2 * Math.PI;
-
-	DOM.markCircle.style.strokeDasharray = `${circumference} ${circumference}`;
-	DOM.markCircle.style.strokeDashoffset = `${circumference}`;
-
-	function setProgress(percent) {
-		const offset = circumference - percent / 100 * circumference;
-		DOM.markCircle.style.strokeDashoffset = offset;
-	}
 
 	function createEmptyBoard() {
 		board = [];
@@ -181,7 +199,7 @@
 		}
 	}
 
-	function populateBoard(firstTileRow, firstTileColumn, numOfMines) {
+	function populateBoardWithMines(firstTileRow, firstTileColumn, numOfMines) {
 		let values = [];
 		for (let i = 0; i < gameVars.board.rows; i++) {
 			for (let j = 0; j < gameVars.board.columns; j++) {
@@ -257,11 +275,27 @@
 	function tileClick(row, column) {
 		if (gameVars.state == "initial") {
 			gameVars.state = "underway";
-			populateBoard(row, column, gameVars.board.numOfMines);
+			populateBoardWithMines(row, column, gameVars.board.numOfMines);
 			displayBorderNums();
+			clockInterval = setInterval(() => {
+				let delta = Date.now() - gameVars.timeStart; // milliseconds elapsed since start
+				let currentSeconds = Math.floor(delta / 1000) // in seconds
+				let minutes = Math.floor(currentSeconds / 60);
+				let seconds = currentSeconds % 60;
+				if (minutes <= 9) {
+					DOM.nav.timer.minutes.innerHTML = `0${minutes}`;
+				} else {
+					DOM.nav.timer.minutes.innerHTML = minutes;
+				}
+				if (seconds <= 9) {
+					DOM.nav.timer.seconds.innerHTML = `0${seconds}`;
+				} else {
+					DOM.nav.timer.seconds.innerHTML = seconds;
+				}
+			}, 200);
+			gameVars.timeStart = Date.now();
 			uncoverTile(row, column);
 			DOM.nav.mineCounter.innerHTML = gameVars.minesLeft;
-			clockInterval = setInterval(tickClock, 1000);
 			if (gameVars.xyzzyActivated) {
 				xyzzyInit();
 			}
@@ -282,25 +316,21 @@
 		}
 	}
 
-	let markMode = "none";
-
 	function tileMark(row, column) {
 		if (gameVars.state == "underway" && !board[row][column].uncovered) {
 			if (!board[row][column].markedAsEmpty) {
-				if (markMode == "none") {
-					markMode = "mark";
+				if (gameVars.markMode == "none") {
+					gameVars.markMode = "mark";
 				}
-				if (markMode == "mark") {
-					console.log("marking");
+				if (gameVars.markMode == "mark") {
 					board[row][column].markedAsEmpty = true;
 					getTileElement(row, column).innerHTML = '<i class="icon-flag"></i>';
 				}
 			} else {
-				if (markMode == "none") {
-					markMode = "remove";
+				if (gameVars.markMode == "none") {
+					gameVars.markMode = "remove";
 				}
-				if (markMode == "remove") {
-					console.log("removing");
+				if (gameVars.markMode == "remove") {
 					board[row][column].markedAsEmpty = false;
 					getTileElement(row, column).innerHTML = "";
 				}
@@ -334,11 +364,7 @@
 			}
 			gameVars.minesLeft--;
 			if (gameVars.minesLeft == 0 && gameVars.state == "underway") {
-				DOM.playarea.winOverlay.container.classList.remove("fade");
-				DOM.playarea.winOverlay.container.classList.add("visible");
-				DOM.playarea.board.container.classList.add("no-input");
-				gameVars.state = "finished";
-				clearInterval(clockInterval);
+				winGame();
 			}
 		} else if (fromMineClick) {
 			board[row][column].uncovered = true;
@@ -350,43 +376,88 @@
 			gameVars.state == "underway"
 		) {
 			getTileElement(row, column).classList.add("wrong-tile");
-			DOM.playarea.loseOverlay.container.classList.remove("fade");
-			DOM.playarea.loseOverlay.container.classList.add("visible");
-			DOM.playarea.board.container.classList.add("no-input");
-			gameVars.state = "finished";
-			clearInterval(clockInterval);
+			loseGame();
 		}
+	}
+
+	function winGame() {
+		// Calculate time it took to win
+		let endTime = Date.now() - gameVars.timeStart; // milliseconds elapsed since start
+		let currentSeconds = Math.floor(endTime / 1000) // in seconds
+		let minutes = Math.floor(currentSeconds / 60);
+		let seconds = currentSeconds % 60;
+		let milliseconds = endTime % 1000;
+		if (minutes <= 9) {
+			minutes = `0${minutes}`;
+		}
+		if (seconds <= 9) {
+			seconds = `0${seconds}`;
+		}
+		if (milliseconds <= 100) {
+			milliseconds = `${"0".repeat(3 - milliseconds.toString().length)}${milliseconds}`;
+		}
+		DOM.playarea.winOverlay.time.innerHTML = `${minutes}:${seconds}.${milliseconds}`;
+
+		// Update stats
+		statistics[gameVars.boardSize].gamesWon++;
+		if (statistics[gameVars.boardSize].streakMode != "winning") {
+			statistics[gameVars.boardSize].currentStreak = 1;
+			statistics[gameVars.boardSize].streakMode = "winning";
+		} else {
+			statistics[gameVars.boardSize].currentStreak++;
+		}
+		if (statistics[gameVars.boardSize].currentStreak > statistics[gameVars.boardSize].longestWinningStreak) {
+			statistics[gameVars.boardSize].longestWinningStreak = statistics[gameVars.boardSize].currentStreak;
+		}
+		if (endTime <= statistics[gameVars.boardSize].bestTime || statistics[gameVars.boardSize].bestTime === null) {
+			statistics[gameVars.boardSize].bestTime = endTime;
+			DOM.playarea.winOverlay.newBestTime.style.display = "block";
+		} else {
+			DOM.playarea.winOverlay.newBestTime.style.display = "NONE";
+		}
+
+		localStorage.setItem("sweeperofmines-statistics", JSON.stringify(statistics));
+
+		DOM.playarea.winOverlay.container.classList.remove("fade");
+		DOM.playarea.winOverlay.container.classList.add("visible");
+		DOM.playarea.board.container.classList.add("no-input");
+		gameVars.state = "finished";
+		clearInterval(clockInterval);
+	}
+
+	function loseGame() {
+		// Update stats
+		statistics[gameVars.boardSize].gamesLost++;
+		if (statistics[gameVars.boardSize].streakMode != "losing") {
+			statistics[gameVars.boardSize].currentStreak = 1;
+			statistics[gameVars.boardSize].streakMode = "losing";
+		} else {
+			statistics[gameVars.boardSize].currentStreak++;
+		}
+		if (statistics[gameVars.boardSize].currentStreak > statistics[gameVars.boardSize].longestLosingStreak) {
+			statistics[gameVars.boardSize].longestLosingStreak = statistics[gameVars.boardSize].currentStreak;
+		}
+
+		localStorage.setItem("sweeperofmines-statistics", JSON.stringify(statistics));
+
+		DOM.playarea.loseOverlay.minesLeft.innerHTML = gameVars.minesLeft;
+		DOM.playarea.loseOverlay.container.classList.remove("fade");
+		DOM.playarea.loseOverlay.container.classList.add("visible");
+		DOM.playarea.board.container.classList.add("no-input");
+		gameVars.state = "finished";
+		clearInterval(clockInterval);
 	}
 
 	function uncoverBoard() {
 		for (let row in board) {
 			for (let column in board[row]) {
-				if (board[row][column].hasMine && !board[row][column].uncovered) {
+				if (board[row][column].hasMine) {
 					getTileElement(row, column).innerHTML = "<i class='icon-mine'></i>";
 					getTileElement(row, column).dataset.clickable = "false";
 				} else {
 					getTileElement(row, column).innerHTML = board[row][column].numOfNearbyMines;
 				}
 			}
-		}
-	}
-
-	function tickClock() {
-		gameVars.time.seconds++;
-		if (gameVars.time.seconds >= 60) {
-			gameVars.time.seconds -= 60;
-			gameVars.time.minutes++;
-		}
-
-		if (gameVars.time.minutes <= 9) {
-			DOM.nav.timer.minutes.innerHTML = `0${gameVars.time.minutes}`;
-		} else {
-			DOM.nav.timer.minutes.innerHTML = gameVars.time.minutes;
-		}
-		if (gameVars.time.seconds <= 9) {
-			DOM.nav.timer.seconds.innerHTML = `0${gameVars.time.seconds}`;
-		} else {
-			DOM.nav.timer.seconds.innerHTML = gameVars.time.seconds;
 		}
 	}
 
@@ -420,8 +491,36 @@
 		DOM.playarea.columnNums.innerHTML = html;
 	}
 
+	function showStats(board) {
+		DOM.modals.statistics.gamesPlayed.innerHTML = statistics[board].gamesWon + statistics[board].gamesLost;
+		DOM.modals.statistics.gamesWon.innerHTML = statistics[board].gamesWon;
+		DOM.modals.statistics.gamesLost.innerHTML = statistics[board].gamesLost;
+		if (statistics[board].gamesWon + statistics[board].gamesLost != 0) {
+			let percent = statistics[board].gamesWon / (statistics[board].gamesWon + statistics[board].gamesLost) * 100;
+			DOM.modals.statistics.winPercent.innerHTML = `${percent.toFixed(2)}%`;
+		} else {
+			DOM.modals.statistics.winPercent.innerHTML = "N/A"
+		}
+		DOM.modals.statistics.longestWinningStreak.innerHTML = statistics[board].longestWinningStreak;
+		DOM.modals.statistics.longestLosingStreak.innerHTML = statistics[board].longestLosingStreak;
+		DOM.modals.statistics.currentStreak.innerHTML = `${statistics[board].currentStreak} (${statistics[board].streakMode})`;
+		if (board != "custom") {
+			if (statistics[board].bestTime != null) {
+				let minutes = Math.floor(statistics[board].bestTime / 1000 / 60);
+				let seconds = Math.floor((statistics[board].bestTime / 1000) % 60);
+				let milliseconds = statistics[board].bestTime % 1000;
+				DOM.modals.statistics.bestTime.innerHTML = `${minutes}:${seconds}.${milliseconds}`;
+			} else {
+				DOM.modals.statistics.bestTime.innerHTML = "N/A";
+			}
+
+			DOM.modals.statistics.bestTime.parentNode.style.removeProperty("display");
+		} else {
+			DOM.modals.statistics.bestTime.parentNode.style.display = "none";
+		}
+	}
+
 	let multiTouch = false;
-	let markCircleTimeout;
 	let markTouch = false;
 
 	function displayBoard() {
@@ -443,21 +542,9 @@
 				if (!evt.isPrimary || multiTouch) {
 					multiTouch = true;
 					return;
-				} else if (evt.button == 2) {
+				} else if (evt.button == 2 || gameVars.clickSwap) {
+					markTouch = true;
 					tileMark(parseInt(tile.dataset.row), parseInt(tile.dataset.column), true);
-				} else {
-					markCircleTimeout = setTimeout(() => {
-						DOM.markCircleDiv.classList.add("hold");
-						setProgress(100);
-						DOM.markCircleDiv.style.top = `${evt.clientY - 80}px`;
-						DOM.markCircleDiv.style.left = `${evt.clientX - 80}px`;
-						markCircleTimeout = setTimeout(() => {
-							DOM.markCircle.style.stroke = "#0007";
-							markTouch = true;
-							DOM.playarea.board.container.style.touchAction = "none";
-							tileMark(parseInt(tile.dataset.row), parseInt(tile.dataset.column))
-						}, 400)
-					}, 300)
 				}
 				evt.target.releasePointerCapture(evt.pointerId);
 			})
@@ -468,22 +555,15 @@
 					multiTouch = false;
 					return;
 				}
-				if (!markTouch && evt.button == 0) {
+				markTouch = false;
+				if (!gameVars.clickSwap && evt.button == 0) {
 					tileClick(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
 				}
-				clearTimeout(markCircleTimeout);
 			});
 			tile.addEventListener("contextmenu", (evt) => {
 				evt.preventDefault();
 				return false;
 			});
-			tile.addEventListener("pointermove", evt => {
-				if (!evt.isPrimary) {
-					return;
-				}
-				DOM.markCircleDiv.style.top = `${evt.clientY - 80}px`;
-				DOM.markCircleDiv.style.left = `${evt.clientX - 80}px`;
-			})
 			tile.addEventListener("pointerenter", (evt) => {
 				if (!evt.isPrimary) {
 					return;
@@ -493,24 +573,15 @@
 				}
 			});
 			tile.addEventListener("pointercancel", evt => {
-				DOM.markCircleDiv.classList.remove("hold");
-				DOM.markCircle.style.stroke = "#000F";
-				setProgress(0);
-				clearTimeout(markCircleTimeout);
 				markTouch = false;
-				markMode = "none";
+				gameVars.markMode = "none";
 			})
 		}
 	}
 
 	document.body.addEventListener("pointerup", () => {
-		DOM.markCircleDiv.classList.remove("hold");
-		DOM.markCircle.style.stroke = "#000F";
-		setProgress(0);
 		markTouch = false;
-		DOM.playarea.board.container.style.removeProperty("touch-action");
-		clearTimeout(markCircleTimeout);
-		markMode = "none";
+		gameVars.markMode = "none";
 	})
 
 	function newGame() {
@@ -531,13 +602,50 @@
 		displayEmptyBorderNums();
 		gameVars.state = "initial";
 		clearInterval(clockInterval);
-		gameVars.time.minutes = gameVars.time.seconds = 0;
 		DOM.nav.timer.minutes.innerHTML = DOM.nav.timer.seconds.innerHTML = "00";
 		DOM.playarea.board.container.classList.remove("no-input");
 		DOM.nav.mineCounter.innerHTML = gameVars.minesLeft = gameVars.board.numOfMines;
 	}
 
+	DOM.nav.mineBtn.addEventListener("click", () => {
+		gameVars.clickSwap = false;
+		DOM.playarea.board.container.classList.remove("no-scroll");
+		DOM.nav.mineBtn.classList.add("active");
+		DOM.nav.markBtn.classList.remove("active");
+	})
+
+	DOM.nav.markBtn.addEventListener("click", () => {
+		gameVars.clickSwap = true;
+		DOM.playarea.board.container.classList.add("no-scroll")
+		DOM.nav.markBtn.classList.add("active");
+		DOM.nav.mineBtn.classList.remove("active");
+	})
+
 	DOM.nav.newGameBtn.addEventListener("click", evt => {
+		if (gameVars.state === "underway") {
+			DOM.modals.container.classList.add("visible");
+			DOM.modals.container.classList.remove("fade");
+			DOM.modals.newGameWarning.container.classList.add("visible");
+			DOM.modals.newGameWarning.container.classList.remove("fade");
+		} else {
+			newGame();
+		}
+	});
+
+	DOM.modals.newGameWarning.confirm.addEventListener("click", evt => {
+		statistics[gameVars.boardSize].gamesLost++;
+		if (statistics[gameVars.boardSize].streakMode != "losing") {
+			statistics[gameVars.boardSize].currentStreak = 1;
+			statistics[gameVars.boardSize].streakMode = "losing";
+		} else {
+			statistics[gameVars.boardSize].currentStreak++;
+		}
+		if (statistics[gameVars.boardSize].currentStreak > statistics[gameVars.boardSize].longestLosingStreak) {
+			statistics[gameVars.boardSize].longestLosingStreak = statistics[gameVars.boardSize].currentStreak;
+		}
+
+		localStorage.setItem("sweeperofmines-statistics", JSON.stringify(statistics));
+
 		newGame();
 	});
 
@@ -565,7 +673,21 @@
 		});
 	});
 
+	document.querySelectorAll('[data-modalopen="#statistics-modal"]').forEach(el => {
+		el.addEventListener("click", () => {
+			showStats(DOM.modals.statistics.select.value);
+		});
+	});
+
+	DOM.modals.settings.container.addEventListener("click", () => {
+		localStorage.setItem("sweeperofmines-settings", JSON.stringify(settings));
+		if (gameVars.state != "underway") {
+			newGame();
+		}
+	})
+
 	DOM.modals.settings.container.querySelector(".modal-close").addEventListener("click", () => {
+		localStorage.setItem("sweeperofmines-settings", JSON.stringify(settings));
 		if (gameVars.state != "underway") {
 			newGame();
 		}
@@ -574,6 +696,9 @@
 	document.querySelectorAll(".modal").forEach(el => {
 		el.addEventListener("click", evt => {
 			if (evt.target === evt.currentTarget) {
+				if (DOM.modals.settings.container.classList.contains("visible")) {
+					localStorage.setItem("sweeperofmines-settings", JSON.stringify(settings));
+				}
 				DOM.modals.container.classList.add("fade");
 				DOM.modals.container.classList.remove("visible");
 				el.classList.add("fade");
@@ -690,7 +815,17 @@
 	DOM.modals.settings.customBoard.numOfMines.addEventListener("input", evt => {
 		if (evt.target.value > settings.maxMines) {
 			evt.target.value = settings.maxMines;
-		} else if (evt.target.value < 2 || !evt.target.value) {
+		}
+		settings.board.numOfMines = parseInt(evt.target.value);
+		if (gameVars.state == "underway") {
+			DOM.modals.settings.boardApplyWarning.style.display = "block";
+		} else {
+			gameVars.board.numOfMines = parseInt(evt.target.value);
+		}
+	})
+
+	DOM.modals.settings.customBoard.numOfMines.addEventListener("blur", evt => {
+		if (evt.target.value < 2 || !evt.target.value) {
 			evt.target.value = 2;
 		}
 		settings.board.numOfMines = parseInt(evt.target.value);
@@ -701,30 +836,14 @@
 		}
 	})
 
-	DOM.nav.markSwapBtn.addEventListener("click", () => {
-		gameVars.clickSwap = !gameVars.clickSwap;
-		if (gameVars.clickSwap) {
-			DOM.nav.markSwapBtn.innerHTML = '<i class="icon-flag"></i>';
-			DOM.playarea.board.container.classList.add("no-scroll");
-		} else {
-			DOM.nav.markSwapBtn.innerHTML = '<i class="icon-mine"></i>';
-			DOM.playarea.board.container.classList.remove("no-scroll");
-		}
-	})
-
-	const mobileQuery = window.matchMedia('only screen and (max-width: 767px)');
-	mobileQuery.addEventListener("change", evt => {
-		if (!evt.matches) {
-			gameVars.clickSwap = false;
-			DOM.playarea.board.container.classList.remove("no-scroll");
-			DOM.nav.markSwapBtn.innerHTML = '<i class="icon-mine"></i>'
-		}
+	DOM.modals.statistics.select.addEventListener("change", evt => {
+		showStats(evt.target.value);
 	})
 
 	function calculateMaxMines() {
 		let maxMines = Math.floor(settings.board.columns * settings.board.rows / 2);
-		if (maxMines < 25) {
-			maxMines = 25;
+		if (maxMines < 12) {
+			maxMines = 12;
 		}
 		DOM.modals.settings.customBoard.maxMines.innerHTML = settings.maxMines = maxMines;
 		if (DOM.modals.settings.customBoard.numOfMines.value > settings.maxMines) {
@@ -751,13 +870,56 @@
 		}
 	})
 
-	let root = document.documentElement;
+	const root = document.documentElement;
 
 	DOM.modals.settings.tileSize.addEventListener("input", evt => {
+		settings.tileSize = evt.target.value;
 		root.style.setProperty('--tile-size', `${evt.target.value}px`);
 	})
 
-	newGame();
+	DOM.modals.settings.theme.addEventListener("change", evt => {
+		settings.theme = evt.target.value;
+		switch (settings.theme) {
+			case "auto":
+				root.classList.add("auto");
+				root.classList.remove("dark");
+				break;
+			case "light":
+				root.classList.remove("auto");
+				root.classList.remove("dark");
+				break;
+			case "dark":
+				root.classList.add("dark");
+				root.classList.remove("auto");
+				break;
+		}
+	})
+
+	// Load stats and options
+
+	let tempSettings = localStorage.getItem("sweeperofmines-settings");
+	let tempStats = localStorage.getItem("sweeperofmines-statistics");
+
+	if (tempSettings != null) {
+		settings = JSON.parse(tempSettings);
+		DOM.modals.settings.boardSize.value = settings.boardSize;
+		if (settings.boardSize == "custom") {
+			DOM.modals.settings.customBoard.container.classList.add("open");
+		}
+		DOM.modals.settings.customBoard.columns.value = settings.board.columns;
+		DOM.modals.settings.customBoard.rows.value = settings.board.rows;
+		DOM.modals.settings.customBoard.numOfMines.value = settings.board.numOfMines;
+		DOM.modals.settings.customBoard.maxMines.value = settings.maxMines;
+		DOM.modals.settings.tileSize.value = settings.tileSize;
+		DOM.modals.settings.theme.value = settings.theme;
+		DOM.modals.settings.theme.dispatchEvent(new Event("change"));
+		root.style.setProperty('--tile-size', `${settings.tileSize}px`);
+	}
+	if (tempStats != null) {
+		statistics = JSON.parse(tempStats);
+	}
+
+	// Remove custom board limits if url has ?customBoardUnlimited
 
 	const urlParams = new URLSearchParams(window.location.search);
 	let customBoardUnlimited = false;
@@ -788,7 +950,7 @@
 		bubble.innerHTML = val;
 
 		// Sorta magic numbers based on size of the native UI thumb
-		bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
+		bubble.style.left = `calc(${newVal}% + (${10 - newVal * 0.19}px))`;
 	}
 
 	// Xyzzy easter egg code
@@ -820,7 +982,7 @@
 
 	function xyzzyInit() {
 		DOM.playarea.board.tiles.forEach((el) => {
-			el.addEventListener("mouseover", () => {
+			el.addEventListener("pointerover", () => {
 				if (gameVars.xyzzyShift) {
 					if (board[el.dataset.row][el.dataset.column].hasMine) {
 						xyzzyPixel.style.backgroundColor = "#000";
@@ -831,4 +993,7 @@
 			});
 		});
 	}
+
+	// Start new game on startup
+	newGame();
 })();

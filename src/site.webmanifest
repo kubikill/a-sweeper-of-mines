@@ -1,0 +1,28 @@
+{
+    "name": "A Sweeper of Mines",
+    "short_name": "Sweeper of Mines",
+    "icons": [
+        {
+            "src": "./android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "./android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "./android-chrome-512x512-maskable.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "background_color": "#FFF",
+    "theme_color": "#FFF",
+    "start_url": "https://kubikill.github.io/a-sweeper-of-mines",
+    "display": "standalone"
+}

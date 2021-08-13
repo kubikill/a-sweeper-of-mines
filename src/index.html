@@ -1,53 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="auto">
 
 <head>
 	<meta charset="utf-8" />
-	<title>A Sweeper of Mines v0.1</title>
+	<title>A Sweeper of Mines v0.9</title>
 	<meta name="description" content='A reverse Minesweeper/nonogram hybrid.' />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<meta property="og:title" content="A Sweeper of Mines" />
-	<meta property="og:type" content="" />
-	<meta property="og:url" content="" />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://kubikill.github.io/a-sweeper-of-mines/" />
 	<meta property="og:image" content="" />
-	<link rel="stylesheet" href="./css/icons.css" />
-	<link rel="stylesheet" href="./css/normalize.css" />
-	<link rel="stylesheet" href="./css/main.css" />
-	<link rel="stylesheet" href="./css/custom.scss" />
+	<meta property="og:description" content='A reverse Minesweeper/nonogram hybrid.' />
+	<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+	<link rel="icon" type="image/png" href="./favicon.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+	<link rel="manifest" href="./site.webmanifest">
+	<link rel="mask-icon" href="./safari-pinned-tab.svg" color="#202124">
+	<meta name="apple-mobile-web-app-title" content="A Sweeper of Mines">
+	<meta name="application-name" content="A Sweeper of Mines">
+	<meta name="msapplication-TileColor" content="#2b5797">
+	<meta name="theme-color" media="(prefers-color-scheme: light)" content="#FFFFFF">
+	<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#202124">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="preload" href="./css/icons.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<link rel="preload" href="./css/normalize.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<link rel="preload" href="./css/main.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<link rel="preload" href="./css/custom.scss" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<link rel="preload" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<noscript>
+		<link rel="stylesheet" href="./css/icons.css" />
+		<link rel="stylesheet" href="./css/normalize.css" />
+		<link rel="stylesheet" href="./css/main.css" />
+		<link rel="stylesheet" href="./css/custom.scss" />
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;700&display=swap">
+	</noscript>
 	<script src="./js/main.js" defer></script>
-	<meta name="theme-color" content="#fafafa" />
 </head>
 
 <body>
 	<main>
 		<nav id="top-row-nav">
-			<button id="menu-btn" class="mobile-only" data-modalopen="#menu-modal">
+			<button id="menu-btn" class="mobile-only" data-modalopen="#menu-modal" title="Menu">
 				<i class="icon-menu"></i>
 			</button>
-			<button id="newgame-btn"><i class="icon-plus-circle"></i></button>
-			<button id="settings-btn" class="desktop-only" data-modalopen="#settings-modal">
+			<button id="newgame-btn" title="New game"><i class="icon-plus-circle"></i></button>
+			<button id="settings-btn" class="desktop-only" data-modalopen="#settings-modal" title="Settings">
 				<i class="icon-settings"></i>
 			</button>
-			<button id="about-btn" class="desktop-only" data-modalopen="#about-modal">
+			<button id="about-btn" class="desktop-only" data-modalopen="#about-modal" title="About">
 				<i class="icon-info-with-circle"></i>
 			</button>
-			<div id="mine-counter"><i class="icon-mine"></i><span></span></div>
-			<div id="timer">
+			<div id="mine-counter" title="Mines left"><i class="icon-mine"></i><span></span></div>
+			<div id="timer" title="Timer">
 				<i class="icon-clock"></i>
 				<div>
 					<span id="timer-minutes">00</span>:<span id="timer-seconds">00</span>
 				</div>
 			</div>
-			<button id="stats-btn" class="desktop-only" data-modalopen="#statistics-modal">
+			<button id="stats-btn" class="desktop-only" data-modalopen="#statistics-modal" title="Statistics">
 				<i class="icon-bar-chart"></i>
 			</button>
-			<button id="howtoplay-btn" class="desktop-only" data-modalopen="#howtoplay-modal">
+			<button id="howtoplay-btn" class="desktop-only" data-modalopen="#howtoplay-modal" title="How to play">
 				<i class="icon-book"></i>
 			</button>
-			<button id="hint-btn" data-hints="0"><i class="icon-question-circle"></i></button>
-			<button id="mark-btn" class="mobile-only">
-				<i class="icon-mine"></i>
-			</button>
+			<button id="hint-btn" data-hints="0" title="Hint"><i class="icon-question-circle"></i></button>
 		</nav>
 		<div id="playarea">
 			<div id="column-nums"></div>
@@ -56,33 +73,34 @@
 			<div id="win-overlay">
 				<h2>You win!</h2>
 				<p>Time: <span id="win-time"></span></p>
+				<p id="new-best-time">New best time!</p>
 				<button id="win-new-game-btn">
 					<i class="icon-plus-circle"></i> New game
 				</button>
 				<button id="win-view-board-btn">
-					<i class="icon-plus-circle"></i> View board
+					<i class="icon-view"></i> View board
 				</button>
 			</div>
 			<div id="lose-overlay">
 				<h2>You lost!</h2>
-				<p>Time: <span id="lose-time"></span></p>
 				<p>Mines left: <span id="lose-mines-left"></span></p>
 				<button id="lose-new-game-btn">
 					<i class="icon-plus-circle"></i> New game
 				</button>
 				<button id="lose-view-board-btn">
-					<i class="icon-plus-circle"></i> View board
+					<i class="icon-view"></i> View board
 				</button>
 			</div>
-			<div id="game-finished-icon">
-				<i class="icon-deny"></i>
-			</div>
 		</div>
+		<nav id="bottom-row-nav">
+			<button id="mine-btn" class="active" title="Mine mode"><i class="icon-mine"></i></button>
+			<button id="mark-btn" title="Mark mode"><i class="icon-flag"></i></button>
+		</nav>
 	</main>
 	<aside id="modals">
 		<div id="menu-modal" class="modal">
 			<div class="modal-main">
-				<button class="modal-close">X</button>
+				<button class="modal-close modal-x">X</button>
 				<h2>Menu</h2>
 				<div id="menu-modal-btns">
 					<button id="settings-menu-btn" data-modalopen="#settings-modal">
@@ -102,7 +120,7 @@
 		</div>
 		<div id="settings-modal" class="modal">
 			<div class="modal-main">
-				<button class="modal-close">X</button>
+				<button class="modal-close modal-x">X</button>
 				<h2>Settings</h2>
 				<div id="settings-modal-main">
 					<label for="settings-boardSize">Board size:</label>
@@ -110,7 +128,7 @@
 						<option value="small">Small (10x10, 20 mines)</option>
 						<option value="medium">Medium (15x15, 50 mines)</option>
 						<option value="large">Large (20x20, 90 mines)</option>
-						<option value="verylarge">Very large (30x30, 200 mines)</option>
+						<option value="veryLarge">Very large (30x30, 200 mines)</option>
 						<option value="custom">Custom</option>
 					</select>
 					<div id="settings-customBoard">
@@ -135,79 +153,102 @@
 					</div>
 					<label for="settings-theme">Interface theme:</label>
 					<select id="settings-theme">
-						<option>Auto (white/dark)</option>
-						<option>Auto (white/black)</option>
-						<option>White</option>
-						<option>Dark</option>
-						<option>Black</option>
+						<option value="auto">Auto</option>
+						<option value="light">Light</option>
+						<option value="dark">Dark</option>
 					</select>
-					<p>Persistent install status:</p>
 				</div>
 			</div>
 		</div>
-		<div id="statistics-modal" class="modal">
+		<div id="statistics-modal" class="modal text-center">
 			<div class="modal-main">
-				<button class="modal-close">X</button>
+				<button class="modal-close modal-x">X</button>
 				<h2>Statistics</h2>
-				<select>
-					<option>Small (10x10, 20 mines)</option>
-					<option>Medium (20x20, 90 mines)</option>
-					<option>Large (30x30, 200 mines)</option>
-					<option>Custom</option>
+				<select id="stats-select">
+					<option value="small">Small (10x10, 20 mines)</option>
+					<option value="medium">Medium (15x15, 50 mines)</option>
+					<option value="large">Large (20x20, 90 mines)</option>
+					<option value="veryLarge">Very large (30x30, 200 mines)</option>
+					<option value="custom">Custom</option>
 				</select>
+				<hr>
 				<p>
-					<span data-langstring="stats_gamesplayed">Games played:</span>
+					Games played:
 					<span id="stats-gamesplayed"></span>
 				</p>
 				<p>
-					<span data-langstring="stats_gameswon">Games won:</span>
+					Games won:
 					<span id="stats-gameswon"></span>
 				</p>
 				<p>
-					<span data-langstring="stats_gameslost">Games lost:</span>
+					Games lost:
 					<span id="stats-gameslost"></span>
 				</p>
 				<p>
-					<span data-langstring="stats_winpercent">Win percentage:</span>
+					Win percentage:
 					<span id="stats-winpercent"></span>
 				</p>
 				<p>
-					<span data-langstring="stats_besttime">Best time:</span>
+					Best time:
 					<span id="stats-besttime"></span>
 				</p>
 				<p>
-					<span data-langstring="stats_longestwinstreak">Longest winning streak:</span>
+					Longest winning streak:
 					<span id="stats-longestwinstreak"></span>
 				</p>
 				<p>
-					<span data-langstring="stats_longestlosestreak">Longest losing streak:</span>
+					Longest losing streak:
 					<span id="stats-longestlosestreak"></span>
 				</p>
 				<p>
-					<span data-langstring="stats_currentstreak">Current streak:</span>
+					Current streak:
 					<span id="stats-currentstreak"></span>
 				</p>
 			</div>
 		</div>
-		<div id="howtoplay-modal" class="modal">
+		<div id="howtoplay-modal" class="modal text-center">
 			<div class="modal-main">
-				<button class="modal-close">X</button>
+				<button class="modal-close modal-x">X</button>
 				<h2>How to play</h2>
+				<p>The rules are very similar to reverse Minesweeper.</p>
+				<p>To win the game, uncover all tiles with mines. Uncovering an empty tile will cause you to lose the
+					game.</p>
+				<p>Start the game by clicking anywhere on the board. Your first uncovered tile is guaranteed to have a
+					mine.</p>
+				<p>Every time you uncover a mine, 8 numbers will appear around it. Each number says how many mines there
+					are in 8 tiles surrounding that number.</p>
+				<p>The numbers on the edges of the board tell you how many chests there are in each column/row, below or
+					to the right of the number.</p>
+				<p>Uncovering a mine will also uncover any mines in the 8 tiles surrounding that mine.</p>
+				<p>You can use the right mouse button (or long tap on mobile) to mark tiles as empty.</p>
+				<p>You can use the hint function to uncover a single tile of your choosing without risk of losing the
+					game.</p>
 			</div>
 		</div>
-		<div id="about-modal" class="modal">
+		<div id="about-modal" class="modal text-center">
 			<div class="modal-main">
-				<button class="modal-close">X</button>
+				<button class="modal-close modal-x">X</button>
 				<h2>About</h2>
+				<img src="./logo.svg">
+				<p><strong>A Sweeper of Mines</strong></p>
+				<br>
+				<p>Made by <a href="https://kubikill.github.io/">kubikill</a></p>
+				<p>Inspired by the Mines minigame in <a href="https://store.steampowered.com/app/948900/macdows_95/"
+						rel="noreferer">macdows 95</a></p>
+			</div>
+		</div>
+		<div id="newgamewarning-modal" class="modal text-center">
+			<div class="modal-main">
+				<button class="modal-close modal-x">X</button>
+				<h2>Game still in progress</h2>
+				<p>Are you sure you want to start a new game?</p>
+				<p><strong>Your current game will count as a loss!</strong></p>
+				<br>
+				<button class="modal-close newgamewarning-btn">No</button>
+				<button class="modal-close newgamewarning-btn" id="newgamewarning-confirm">Yes</button>
 			</div>
 		</div>
 	</aside>
-	<div id="markCircle">
-		<svg class="progress-ring" width="160" height="160">
-			<circle class="progress-ring__circle" stroke="#000F" stroke-width="4" fill="transparent" r="72" cx="80"
-				cy="80" />
-		</svg>
-	</div>
 	<div id="xyzzypixel"></div>
 </body>
 

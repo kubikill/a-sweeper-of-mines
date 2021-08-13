@@ -2,22 +2,85 @@
   box-sizing: border-box;
 }
 
+.text-center {
+  text-align: center;
+}
+
 h2,
 p {
   margin: 0;
 }
 
-input[type="number"] {
-  &::-webkit-outer-spin-button,
-  &::-webkit-inner-spin-button {
-    appearance: none;
-    margin: 0;
+input {
+  &[type="number"] {
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      appearance: none;
+      margin: 0;
+    }
   }
+  &[type="range"] {
+    width: 100%;
+  }
+}
+
+label {
+  display: block;
+}
+
+button {
+  appearance: none;
+  border: 1px solid #767676;
+  background-color: #EFEFEF;
+  border-radius: 2px;
+
+  &:hover:not(.hint-disabled, .active) {
+    border-color: #4F4F4F;
+    background-color: #E5E5E5;
+  }
+
+  &:active:not(.hint-disabled, .active) {
+    border-color: hsl(0, 0%, 55%);
+    background-color: hsl(0, 0%, 96%);
+  }
+
+  &.active {
+    background-color: #ccc;
+  }
+}
+
+.range-wrap {
+  position: relative;
+  margin: 0 0 24px;
+}
+
+.bubble {
+  color: #000;
+  padding: 1px 6px;
+  position: absolute;
+  border-radius: 4px;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 1px solid #000;
+}
+
+.bubble::after {
+  background: #000;
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  top: -1px;
+  left: calc(50% - 1px);
 }
 
 :root {
   --tile-size: 32px;
   --font-size: 24px;
+  color-scheme: light;
+  font-family: 'Rubik', sans-serif;
 }
 
 html,
@@ -25,6 +88,7 @@ body {
   height: 100%;
   width: 100%;
   overflow: hidden;
+  position: fixed;
 }
 
 main {
@@ -35,7 +99,7 @@ main {
   flex-shrink: 1;
   height: 100%;
   width: 100%;
-  padding: 8px;
+  padding: 4px 8px;
 }
 
 #top-row-nav {
@@ -48,23 +112,9 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 36px;
-    width: 36px;
+    height: 40px;
+    width: 40px;
     margin: 0 2px;
-    appearance: none;
-    border: 1px solid #767676;
-    background-color: #EFEFEF;
-    border-radius: 2px;
-
-    &:hover:not(.hint-disabled) {
-      border-color: #4F4F4F;
-      background-color: #E5E5E5;
-    }
-
-    &:active:not(.hint-disabled) {
-      border-color: #8D8D8D;
-      background-color: #F5F5F5;
-    }
   }
 
   >div {
@@ -73,7 +123,7 @@ main {
 
   #mine-counter,
   #timer {
-    width: 76px;
+    width: 90px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -81,6 +131,7 @@ main {
     border: 1px black solid;
     border-radius: 8px;
     padding: 0 2px;
+    font-family: monospace;
   }
 
   #mine-counter {
@@ -89,14 +140,31 @@ main {
   }
 }
 
+#bottom-row-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 36px;
+    max-width: 100px;
+    flex-grow: 1;
+    font-size: 20px;
+    margin: 0 6px;
+  }
+}
+
 #playarea {
-  max-height: calc(100% - 64px);
+  max-height: calc(100% - 96px);
   max-width: 98vw;
   font-size: calc(0.75 * var(--tile-size));
-  overflow: hide;
   position: relative;
   border: 2px black solid;
-  margin-top: 8px;
+  margin: 8px 0;
   padding: 8px;
   border-radius: 8px;
   user-select: none;
@@ -104,14 +172,15 @@ main {
   #column-nums {
     position: absolute;
     top: 8px;
-    left: calc(8px + var(--tile-size));
+    left: calc(var(--tile-size) + 5px);
     display: flex;
     flex-direction: row;
     height: var(--tile-size);
-    width: calc(100% - 17px - var(--tile-size));
+    width: calc(100% - 14px - var(--tile-size));
+    padding-left: 2px;
     padding-right: var(--tile-size);
     overflow: hidden;
-    border-bottom: 2px black solid;
+    border-bottom: 3px black solid;
 
     >div {
       height: var(--tile-size);
@@ -121,12 +190,13 @@ main {
       align-items: center;
       flex-shrink: 0;
       position: relative;
+      padding-left: 2px;
 
       &:not(:first-child)::after {
         position: absolute;
         content: " ";
         bottom: 0;
-        left: -1px;
+        left: 0;
         height: calc(var(--tile-size) / 2);
         width: 2px;
         background-color: #000;
@@ -140,12 +210,12 @@ main {
     left: 8px;
     display: flex;
     flex-direction: column;
-    height: calc(100% - 17px - var(--tile-size));
+    height: calc(100% - 16px - var(--tile-size));
     width: var(--tile-size);
     padding-bottom: var(--tile-size);
     overflow: hidden;
     flex-shrink: 0;
-    border-right: 2px black solid;
+    border-right: 3px black solid;
 
     >div {
       height: var(--tile-size);
@@ -154,6 +224,7 @@ main {
       justify-content: center;
       align-items: center;
       position: relative;
+      padding-right: 4px;
 
       &:not(:first-child)::after {
         position: absolute;
@@ -169,8 +240,8 @@ main {
 
   #board {
     position: relative;
-    border-bottom: 1px solid black;
-    border-right: 1px solid black;
+    border-bottom: 2px solid black;
+    border-right: 2px solid black;
     margin: var(--tile-size) 0 0 var(--tile-size);
     height: calc(100% - var(--tile-size));
     width: calc(100% - var(--tile-size));
@@ -178,14 +249,11 @@ main {
 
     &.no-scroll {
       touch-action: none;
-      * {
-        touch-action: none;
-      }
     }
 
     &::-webkit-scrollbar-track {
       border-radius: 10px;
-      background-color: #00000011;
+      background-color: #0001;
     }
 
     &::-webkit-scrollbar {
@@ -224,6 +292,10 @@ main {
         &.wrong-tile {
           background-color: #F00A;
         }
+
+        >i {
+          pointer-events: none;
+        }
       }
 
       &:first-child>div {
@@ -248,10 +320,22 @@ main {
     justify-content: center;
     flex-direction: column;
     visibility: hidden;
-    background-color: #0006;
+    background-color: #000A;
     color: #fff;
     transition: opacity 0.5s;
     opacity: 0;
+
+    button {
+      margin: 4px 0;
+      height: 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      i {
+        margin-right: 8px;
+      }
+    }
 
     &.visible {
       visibility: visible;
@@ -270,14 +354,6 @@ main {
         animation: slide-out 0.5s;
       }
     }
-  }
-
-  #game-finished-icon {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    height: 32px;
-    width: 32px;
   }
 }
 
@@ -341,19 +417,34 @@ main {
     border: 1px black solid;
     border-radius: 12px;
     background-color: #fff;
-    padding: 32px;
+    padding: 12px 32px 24px;
+    max-width: 98vw;
 
-    .modal-close {
+    >h2 {
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .modal-x {
       position: absolute;
-      top: 0;
-      right: 0;
+      top: 2px;
+      right: 2px;
+      background-color: transparent;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+
+      &:hover {
+        color: #888;
+      }
     }
   }
 
   #menu-modal-btns {
     display: flex;
+    justify-content: center;
     flex-wrap: wrap;
-    width: 248px;
+    max-width: 248px;
 
     button {
       width: 120px;
@@ -390,6 +481,134 @@ main {
   width: 2px;
 }
 
+#newgamewarning-modal {
+  .newgamewarning-btn {
+    margin: 8px 16px 0;
+    height: 32px;
+    width: 100%;
+    max-width: 100px;
+  }
+}
+
+#howtoplay-modal {
+  line-height: 20px;
+
+  .modal-main {
+    max-width: 600px;
+
+    p {
+      margin: 8px 0;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+#about-modal img {
+  height: 96px;
+}
+
+#settings-modal-main,
+#settings-customBoard {
+  display: grid;
+  grid-auto-rows: auto;
+  grid-template-columns: 140px auto;
+  grid-template-rows: auto;
+  gap: 4px 0px;
+}
+
+#settings-customBoard {
+  overflow: hidden;
+  height: 0;
+  transition: height 0.4s ease-out;
+
+  &.open {
+    height: auto;
+  }
+}
+
+#settings-customBoard,
+#settings-applywarning,
+hr {
+  grid-column-start: span 2;
+}
+
+#settings-applywarning {
+  text-align: center;
+  font-weight: 700;
+  display: none;
+}
+
+#settings-modal input:not([type="range"]) {
+  max-width: 100px;
+}
+
+#hint-btn {
+  position: relative;
+
+  &.hint-active {
+    color: #34bdeb;
+  }
+
+  &.hint-disabled {
+    background-color: #aaa;
+  }
+
+  &::after {
+    content: attr(data-hints);
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    line-height: 10px;
+    font-size: 13px;
+  }
+}
+
+#new-best-time {
+  display: none;
+}
+
+// Breakpoints
+
+@media only screen and (max-width: 419px) {
+
+  #settings-modal-main,
+  #settings-customBoard {
+    grid-template-columns: auto;
+  }
+
+  #settings-customBoard,
+  #settings-applywarning,
+  hr {
+    grid-column-start: initial;
+  }
+}
+
+@media only screen and (max-width: 479px) {
+  .desktop-only {
+    display: none !important;
+  }
+
+  #newgame-btn {
+    order: 1;
+  }
+
+  #timer,
+  #hint-btn {
+    order: 2;
+  }
+}
+
+@media only screen and (min-width: 480px) {
+  .mobile-only {
+    display: none !important;
+  }
+}
+
+// Animations
+
 @keyframes fade {
   0% {
     opacity: 1;
@@ -423,119 +642,255 @@ main {
   }
 }
 
-.range-wrap {
-  position: relative;
-  margin: 0 0 24px;
-}
+// Auto/black themes
 
-[type="range"] {
-  width: 100%;
-}
+@media screen and (prefers-color-scheme: dark) {
+  .auto {
+    background-color: #202124;
+    color: #CCC;
+    color-scheme: dark;
 
-.bubble {
-  background: red;
-  color: white;
-  padding: 1px 6px;
-  position: absolute;
-  border-radius: 4px;
-  top: 18px;
-  left: 50%;
-  transform: translateX(-50%);
-}
+    button {
+      border: 1px solid #666;
+      background-color: #444;
+      color: #CCC;
 
-.bubble::after {
-  content: "";
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  background: red;
-  top: -1px;
-  left: 50%;
-}
+      &:hover:not(.hint-disabled, .active) {
+        border-color: #666;
+        background-color: #515151;
+      }
 
-label {
-  display: block;
-}
+      &:active:not(.hint-disabled, .active) {
+        border-color: #666;
+        background-color: #393939;
+      }
 
-#settings-modal-main,
-#settings-customBoard {
-  display: grid;
-  grid-auto-rows: auto;
-  grid-template-columns: 160px auto;
-  grid-template-rows: auto;
-  gap: 4px 0px;
-}
+      &.active {
+        background-color: #111;
+      }
+    }
 
-#settings-customBoard {
-  overflow: hidden;
-  height: 0;
-  transition: height 0.4s ease-out;
+    #top-row-nav {
 
-  &.open {
-    height: auto;
+
+      #mine-counter,
+      #timer {
+        border-color: #888;
+      }
+    }
+
+    #playarea {
+      border-color: #888;
+
+      #column-nums {
+        border-color: #888;
+
+        >div:not(:first-child)::after {
+          background-color: #888;
+        }
+      }
+
+      #row-nums {
+        border-color: #888;
+
+        >div:not(:first-child)::after {
+          background-color: #888;
+        }
+      }
+
+      #board {
+        border-color: #888;
+
+        &::-webkit-scrollbar-track {
+          background-color: #8881;
+        }
+
+        &::-webkit-scrollbar {
+          background-color: #040404;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          border-radius: 10px;
+          box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+          background-color: #555;
+        }
+
+        &::-webkit-scrollbar-corner {
+          background-color: #040404;
+        }
+
+        >div>div {
+          border-color: #888;
+        }
+      }
+    }
+
+    .modal .modal-main {
+      border-color: #888;
+      background-color: #202124;
+
+      .modal-x {
+        color: #CCC;
+
+        &:hover {
+          color: #888;
+        }
+      }
+    }
+
+    .bubble {
+      color: #CCC;
+      border-color: #888;
+
+      &::after {
+        background-color: #888;
+      }
+    }
+
+    input,
+    select {
+      background-color: #202124 !important;
+      color: #CCC;
+      border: 1px solid #666;
+    }
+
+    #hint-btn {
+      &.hint-active {
+        color: #34bdeb;
+      }
+
+      &.hint-disabled {
+        background-color: #000;
+        color: #888;
+      }
+    }
+
+    #about-modal img {
+      filter: invert(100%);
+    }
   }
 }
 
-#settings-customBoard,
-#settings-applywarning,
-hr {
-  grid-column-start: span 2;
-}
+.dark {
+  background-color: #202124;
+  color: #CCC;
+  color-scheme: dark;
 
-#settings-applywarning {
-  text-align: center;
-  font-weight: 700;
-  display: none;
-}
+  button {
+    border: 1px solid #666;
+    background-color: #444;
+    color: #CCC;
 
-#settings-modal input:not([type="range"]) {
-  max-width: 100px;
-}
+    &:hover:not(.hint-disabled, .active) {
+      border-color: #666;
+      background-color: #515151;
+    }
 
-@media only screen and (max-width: 767px) {
-  .desktop-only {
-    display: none !important;
-  }
-}
+    &:active:not(.hint-disabled, .active) {
+      border-color: #666;
+      background-color: #393939;
+    }
 
-@media only screen and (min-width: 768px) {
-  .mobile-only {
-    display: none !important;
-  }
-}
-
-#hint-btn {
-  position: relative;
-
-  &.hint-active {
-    color: #34bdeb;
+    &.active {
+      background-color: #111;
+    }
   }
 
-  &.hint-disabled {
-    background-color: #aaa;
+  #top-row-nav {
+
+    #mine-counter,
+    #timer {
+      border-color: #888;
+    }
   }
 
-  &::after {
-    content: attr(data-hints);
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    line-height: 10px;
-    font-size: 13px;
+  #playarea {
+    border-color: #888;
+
+    #column-nums {
+      border-color: #888;
+
+      >div:not(:first-child)::after {
+        background-color: #888;
+      }
+    }
+
+    #row-nums {
+      border-color: #888;
+
+      >div:not(:first-child)::after {
+        background-color: #888;
+      }
+    }
+
+    #board {
+      border-color: #888;
+
+      &::-webkit-scrollbar-track {
+        background-color: #8881;
+      }
+
+      &::-webkit-scrollbar {
+        background-color: #040404;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+        background-color: #555;
+      }
+
+      &::-webkit-scrollbar-corner {
+        background-color: #040404;
+      }
+
+      >div>div {
+        border-color: #888;
+      }
+    }
   }
-}
 
-#markCircle {
-  position: absolute;
-  pointer-events: none;
+  .modal .modal-main {
+    border-color: #888;
+    background-color: #202124;
 
-  .progress-ring__circle {
-    // axis compensation
-    transform: rotate(-90deg);
-    transform-origin: 50% 50%;
+    .modal-x {
+      color: #CCC;
+
+      &:hover {
+        color: #888;
+      }
+    }
   }
 
-  &.hold .progress-ring__circle {
-    transition: 0.4s stroke-dashoffset linear;
+  .bubble {
+    color: #CCC;
+    border-color: #888;
+
+    &::after {
+      background-color: #888;
+    }
+  }
+
+  input,
+  select {
+    background-color: #202124 !important;
+    color: #CCC;
+    border: 1px solid #666;
+  }
+
+  #hint-btn {
+    &.hint-active {
+      color: #34bdeb;
+    }
+
+    &.hint-disabled {
+      background-color: #000;
+      color: #888;
+    }
+  }
+
+  #about-modal img {
+    filter: invert(100%);
   }
 }
