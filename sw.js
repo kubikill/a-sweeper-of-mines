@@ -1,0 +1,2 @@
+self.addEventListener("install",(function(e){e.waitUntil(caches.open("sweeper-of-mines").then((function(e){return e.addAll(["./","./index.html","./css/icons.css","./css/main.css","./css/normalize.css","./css/custom.scss","./js/main.js","./fonts/icons.ttf"])})))})),self.addEventListener("fetch",(function(e){e.respondWith(caches.open("sweeper-of-mines").then((function(n){return n.match(e.request).then((function(s){var t=fetch(e.request).then((function(s){return n.put(e.request,s.clone()),s}));return s||t}))})))}));
+//# sourceMappingURL=sw.js.map
