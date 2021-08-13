@@ -3,14 +3,14 @@
 
 <head>
 	<meta charset="utf-8" />
-	<title>A Sweeper of Mines v0.9</title>
-	<meta name="description" content='A reverse Minesweeper/nonogram hybrid.' />
+	<title>A Sweeper of Mines v1.0</title>
+	<meta name="description" content='A reverse Minesweeper/nonogram hybrid puzzle game.' />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<meta property="og:title" content="A Sweeper of Mines" />
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="https://kubikill.github.io/a-sweeper-of-mines/" />
 	<meta property="og:image" content="" />
-	<meta property="og:description" content='A reverse Minesweeper/nonogram hybrid.' />
+	<meta property="og:description" content='A reverse Minesweeper/nonogram hybrid puzzle game.' />
 	<link rel="icon" type="image/svg+xml" href="./favicon.svg">
 	<link rel="icon" type="image/png" href="./favicon.png">
 	<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
@@ -23,11 +23,17 @@
 	<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#202124">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<script>
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('./sw.js');
+		};
+	</script>
 	<link rel="preload" href="./css/icons.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 	<link rel="preload" href="./css/normalize.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 	<link rel="preload" href="./css/main.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 	<link rel="preload" href="./css/custom.scss" as="style" onload="this.onload=null;this.rel='stylesheet'">
-	<link rel="preload" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<link rel="preload" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;700&display=swap" as="style"
+		onload="this.onload=null;this.rel='stylesheet'">
 	<noscript>
 		<link rel="stylesheet" href="./css/icons.css" />
 		<link rel="stylesheet" href="./css/normalize.css" />
@@ -35,6 +41,48 @@
 		<link rel="stylesheet" href="./css/custom.scss" />
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;700&display=swap">
 	</noscript>
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+
+		:root {
+			--tile-size: 32px;
+			--font-size: 24px;
+			font-family: 'Rubik', sans-serif;
+		}
+
+		html,
+		body {
+			height: 100%;
+			width: 100%;
+			overflow: hidden;
+			position: fixed;
+		}
+
+		#top-row-nav {
+			display: flex;
+			justify-content: center;
+			width: 100%;
+		}
+
+		main {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+			flex-shrink: 1;
+			height: 100%;
+			width: 100%;
+			padding: 4px 8px;
+		}
+
+		#win-overlay,
+		#lose-overlay {
+			position: absolute;
+			visibility: hidden;
+		}
+	</style>
 	<script src="./js/main.js" defer></script>
 </head>
 
