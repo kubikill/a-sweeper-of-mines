@@ -173,7 +173,7 @@ main {
     display: flex;
     flex-direction: row;
     height: var(--tile-size);
-    width: calc(100% - 14px - var(--tile-size));
+    width: calc(100% - 13px - var(--tile-size));
     padding-left: 2px;
     padding-right: var(--tile-size);
     overflow: hidden;
