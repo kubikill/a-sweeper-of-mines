@@ -4,12 +4,11 @@ self.addEventListener('install', function (event) {
         return cache.addAll([
           "./",
           "./index.html",
-          "./icons.68ee25fb.css",
-          "./main.eb9b6f73.css",
-          "./normalize.7bac37d8.css",
-          "./custom.8f999d02.css",
-          "./index.0f5133e8.js",
-          "./icons.3d969a31.ttf"
+          "./icons.1894e4dd.css",
+          "./icons.3d969a31.ttf",
+          "./normalize.50fa89bf.css",
+          "./custom.dc6edd73.css",
+          "./index.72271adf.js",
         ]);
       }),
     );
