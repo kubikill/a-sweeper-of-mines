@@ -1,2 +1,4 @@
-# macdows-minesweeper
- A reverse Minesweeper/monogram hybrid, based on the "Mines" minigame from Macdows 95.
+# A Sweeper of Mines
+A reverse Minesweeper/monogram hybrid puzzle game, written in HTML/CSS/Vanilla JavaScript.
+
+# [Play](https://kubikill.github.io/a-sweeper-of-mines/)
