@@ -8,7 +8,7 @@ self.addEventListener('install', function (event) {
           "./icons.3d969a31.ttf",
           "./normalize.50fa89bf.css",
           "./custom.dc87a049.css",
-          "./index.72271adf.js",
+          "./index.1587fec4.js",
         ]);
       }),
     );
