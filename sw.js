@@ -4,12 +4,12 @@ self.addEventListener('install', function (event) {
         return cache.addAll([
           "./",
           "./index.html",
-          "./css/icons.css",
-          "./css/main.css",
-          "./css/normalize.css",
-          "./css/custom.scss",
-          "./js/main.js",
-          "./fonts/icons.ttf"
+          "./icons.68ee25fb.css",
+          "./main.eb9b6f73.css",
+          "./normalize.7bac37d8.css",
+          "./custom.8f999d02.css",
+          "./index.0f5133e8.js",
+          "./icons.3d969a31.ttf"
         ]);
       }),
     );
