@@ -9,6 +9,7 @@ p {
 
 input {
   &[type="number"] {
+    -moz-appearance: textfield;
 
     &::-webkit-outer-spin-button,
     &::-webkit-inner-spin-button {
@@ -57,10 +58,11 @@ button {
   padding: 1px 6px;
   position: absolute;
   border-radius: 4px;
-  top: 18px;
+  top: 20px;
   left: 50%;
   transform: translateX(-50%);
   border: 1px solid #000;
+  background-color: #FFF;
 }
 
 .bubble::after {
@@ -734,6 +736,7 @@ hr {
     .bubble {
       color: #CCC;
       border-color: #888;
+      background-color: #202124;
 
       &::after {
         background-color: #888;
