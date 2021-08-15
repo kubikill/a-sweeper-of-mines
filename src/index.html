@@ -58,7 +58,30 @@
 			position: fixed;
 		}
 
-		body {
+		#loading-screen {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			border: 2px solid black;
+			border-radius: 8px;
+			padding: 16px;
+			font-size: 24px;
+		}
+
+		@media screen and (prefers-color-scheme: dark) {
+			.auto {
+				background-color: #202124;
+				color: #CCC;
+				color-scheme: dark;
+			}
+			#loading-screen {
+					border-color: #EEE;
+			}
+		}
+
+		main,
+		aside {
 			opacity: 0;
 		}
 
@@ -283,6 +306,7 @@
 		</div>
 	</aside>
 	<div id="xyzzypixel"></div>
+	<div id="loading-screen">Loading...</div>
 </body>
 
 </html>
