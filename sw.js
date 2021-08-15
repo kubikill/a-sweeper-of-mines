@@ -7,7 +7,7 @@ self.addEventListener('install', function (event) {
           "./icons.1894e4dd.css",
           "./icons.3d969a31.ttf",
           "./normalize.50fa89bf.css",
-          "./custom.365bee9d.css",
+          "./custom.7046eea9.css",
           "./index.72271adf.js",
         ]);
       }),
