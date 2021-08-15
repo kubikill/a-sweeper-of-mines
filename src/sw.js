@@ -5,7 +5,6 @@ self.addEventListener('install', function (event) {
           "./",
           "./index.html",
           "./css/icons.css",
-          "./css/main.css",
           "./css/normalize.css",
           "./css/custom.scss",
           "./js/main.js",
