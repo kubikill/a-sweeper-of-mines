@@ -77,7 +77,25 @@ button {
   color-scheme: light;
 }
 
+body {
+  opacity: 1 !important;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  flex-shrink: 1;
+  height: 100%;
+  width: 100%;
+  padding: 4px 8px;
+}
+
 #top-row-nav {
+  display: flex;
+			justify-content: center;
+			width: 100%;
   font-size: 20px;
 
   button {

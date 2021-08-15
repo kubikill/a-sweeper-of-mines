@@ -7,11 +7,11 @@
   },
   "devDependencies": {
     "@parcel/babel-preset-env": "*",
-    "@parcel/packager-raw-url": "^2.0.0-rc.0",
-    "@parcel/transformer-image": "^2.0.0-rc.0",
-    "@parcel/transformer-sass": "^2.0.0-rc.0",
-    "@parcel/transformer-webmanifest": "^2.0.0-rc.0",
+    "@parcel/packager-raw-url": "^2.0.0-nightly.2422",
+    "@parcel/transformer-image": "^2.0.0-nightly.2422",
+    "@parcel/transformer-sass": "^2.0.0-nightly.800",
+    "@parcel/transformer-webmanifest": "^2.0.0-nightly.2422",
     "gh-pages": "^3.2.2",
-    "parcel": "^2.0.0-rc.0"
+    "parcel": "^2.0.0-nightly.798"
   }
 }
