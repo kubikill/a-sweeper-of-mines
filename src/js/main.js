@@ -228,8 +228,8 @@
 		}
 
 		// Assign numbers to each tile, and count mines in each row and column
-		for (let row in board) {
-			for (let column in board[row]) {
+		for (let row = 0; row < board.length; row++) {
+			for (let column = 0; column < board[row].length; column++) {
 				countNearbyMines(parseInt(row), parseInt(column));
 				if (board[row][column].hasMine) {
 					gameVars.rowMineCount[row]++;
@@ -449,8 +449,8 @@
 	}
 
 	function uncoverBoard() {
-		for (let row in board) {
-			for (let column in board[row]) {
+		for (let row = 0; row < board.length; row++) {
+			for (let column = 0; column < board[row].length; column++) {
 				if (board[row][column].hasMine) {
 					getTileElement(row, column).innerHTML = "<i class='icon-mine'></i>";
 					getTileElement(row, column).dataset.clickable = "false";
@@ -525,9 +525,9 @@
 
 	function displayBoard() {
 		let html = "";
-		for (let row in board) {
+		for (let row = 0; row < board.length; row++) {
 			html += `<div>`;
-			for (let column in board[row]) {
+			for (let column = 0; column < board[row].length; column++) {
 				html += `<div data-row="${row}" data-column="${column}"></div>`;
 			}
 			html += "</div>";
@@ -544,7 +544,7 @@
 					return;
 				} else if (evt.button == 2 || gameVars.clickSwap) {
 					markTouch = true;
-					tileMark(parseInt(tile.dataset.row), parseInt(tile.dataset.column), true);
+					tileMark(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
 				}
 				evt.target.releasePointerCapture(evt.pointerId);
 			})
