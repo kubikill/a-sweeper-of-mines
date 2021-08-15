@@ -77,8 +77,9 @@ button {
   color-scheme: light;
 }
 
-main, aside {
-  opacity: 1 !important;
+body > main, 
+body > aside {
+  visibility: visible;
 }
 
 #loading-screen {
