@@ -924,7 +924,7 @@
 	const urlParams = new URLSearchParams(window.location.search);
 	let customBoardUnlimited = false;
 	if (urlParams.has('customBoardUnlimited')) {
-		bulkUnlimited = true;
+		customBoardUnlimited = true;
 	}
 
 
