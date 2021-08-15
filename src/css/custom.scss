@@ -362,7 +362,7 @@ main {
   opacity: 0;
   background-color: #000A;
   transition: opacity 0.5s;
-
+  pointer-events: none;
   &.visible {
     visibility: visible;
     opacity: 1;
@@ -371,6 +371,9 @@ main {
   &.fade {
     animation: fade 0.5s ease;
     visibility: hidden;
+  }
+  * {
+    pointer-events: auto;
   }
 }
 
@@ -397,7 +400,7 @@ main {
   }
 
   &.fade {
-    animation: fade 0.5s ease;
+    animation: fade 0.5s ease forwards;
     visibility: hidden;
 
     .modal-main {
