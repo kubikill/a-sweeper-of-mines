@@ -1,9 +1,11 @@
 "use strict";
 
 (function () {
+	// Shorthand for getElementById
 	function byId(id) {
 		return document.getElementById(id);
 	}
+	// Store references to DOM elements
 	const DOM = {
 		nav: {
 			menuBtn: byId("menu-btn"),
@@ -99,6 +101,7 @@
 			columns: 10,
 			numOfMines: 20,
 		},
+		clockInterval: null,
 		boardSize: "small",
 		rowMineCount: [],
 		columnMineCount: [],
@@ -141,7 +144,6 @@
 
 	let statistics = {
 		small: {
-			// Games won/lost/played, best time, longest winning/losing streaks, current streak
 			gamesWon: 0,
 			gamesLost: 0,
 			bestTime: null,
@@ -186,8 +188,6 @@
 			streakMode: "N/A"
 		},
 	};
-
-	let clockInterval;
 
 	function createEmptyBoard() {
 		board = [];
@@ -277,7 +277,7 @@
 			gameVars.state = "underway";
 			populateBoardWithMines(row, column, gameVars.board.numOfMines);
 			displayBorderNums();
-			clockInterval = setInterval(() => {
+			gameVars.clockInterval = setInterval(() => {
 				let delta = Date.now() - gameVars.timeStart; // milliseconds elapsed since start
 				let currentSeconds = Math.floor(delta / 1000) // in seconds
 				let minutes = Math.floor(currentSeconds / 60);
@@ -317,6 +317,7 @@
 	}
 
 	function tileMark(row, column) {
+		// Mark tile only if game is in progress and the tile is not uncovered
 		if (gameVars.state == "underway" && !board[row][column].uncovered) {
 			if (!board[row][column].markedAsEmpty) {
 				if (gameVars.markMode == "none") {
@@ -339,6 +340,7 @@
 	}
 
 	function uncoverTile(row, column, fromMineClick = false, override = false) {
+		// Stop function if trying to uncover a tile while game is not in progress, uncover an out-of-bounds tile or if tile is already uncovered
 		if (
 			(gameVars.state != "underway" && !override) ||
 			row < 0 ||
@@ -422,7 +424,7 @@
 		DOM.playarea.winOverlay.container.classList.add("visible");
 		DOM.playarea.board.container.classList.add("no-input");
 		gameVars.state = "finished";
-		clearInterval(clockInterval);
+		clearInterval(gameVars.clockInterval);
 	}
 
 	function loseGame() {
@@ -445,7 +447,7 @@
 		DOM.playarea.loseOverlay.container.classList.add("visible");
 		DOM.playarea.board.container.classList.add("no-input");
 		gameVars.state = "finished";
-		clearInterval(clockInterval);
+		clearInterval(gameVars.clockInterval);
 	}
 
 	function uncoverBoard() {
@@ -601,7 +603,7 @@
 		displayBoard();
 		displayEmptyBorderNums();
 		gameVars.state = "initial";
-		clearInterval(clockInterval);
+		clearInterval(gameVars.clockInterval);
 		DOM.nav.timer.minutes.innerHTML = DOM.nav.timer.seconds.innerHTML = "00";
 		DOM.playarea.board.container.classList.remove("no-input");
 		DOM.nav.mineCounter.innerHTML = gameVars.minesLeft = gameVars.board.numOfMines;
@@ -994,6 +996,6 @@
 		});
 	}
 
-	// Start new game on startup
+	// Start new game on load
 	newGame();
 })();
