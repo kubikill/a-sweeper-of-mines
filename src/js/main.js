@@ -20,6 +20,7 @@ const DOM = {
 		markBtn: byId("mark-btn")
 	},
 	playarea: {
+		container: byId("playarea"),
 		columnNums: byId("column-nums"),
 		rowNums: byId("row-nums"),
 		board: {
@@ -561,10 +562,6 @@ function displayBoard() {
 				tileClick(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
 			}
 		});
-		tile.addEventListener("contextmenu", (evt) => {
-			evt.preventDefault();
-			return false;
-		});
 		tile.addEventListener("pointerenter", (evt) => {
 			if (!evt.isPrimary) {
 				return;
@@ -718,6 +715,11 @@ DOM.modals.menu.btns.querySelectorAll("button").forEach((el) => {
 		DOM.modals.menu.container.classList.remove("visible");
 	});
 });
+
+DOM.playarea.container.addEventListener("contextmenu", evt => {
+	evt.preventDefault();
+	return false;
+})
 
 DOM.playarea.board.container.addEventListener("scroll", () => {
 	DOM.playarea.rowNums.scroll(0, DOM.playarea.board.container.scrollTop);
