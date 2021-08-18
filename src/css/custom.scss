@@ -76,6 +76,7 @@ button {
 }
 
 :root {
+  background-color: #fff;
   color-scheme: light;
 }
 
@@ -643,7 +644,7 @@ hr {
 // Auto/black themes
 
 @media screen and (prefers-color-scheme: dark) {
-  .auto {
+  :root.auto {
     background-color: #202124;
     color: #CCC;
     color-scheme: dark;
@@ -770,7 +771,7 @@ hr {
   }
 }
 
-.dark {
+:root.dark {
   background-color: #202124;
   color: #CCC;
   color-scheme: dark;
@@ -865,6 +866,7 @@ hr {
   .bubble {
     color: #CCC;
     border-color: #888;
+    background-color: #202124;
 
     &::after {
       background-color: #888;
