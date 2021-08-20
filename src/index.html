@@ -23,19 +23,15 @@
 	<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#202124">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<script>
+	<script type="module">
 		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.register(new URL('./sw.js'));
+			navigator.serviceWorker.register(new URL('./sw.js', import.meta.url));
 		};
 	</script>
-	<link rel="preload" href="./css/icons.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-	<link rel="preload" href="./css/normalize.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 	<link rel="preload" href="./css/custom.scss" as="style" onload="this.onload=null;this.rel='stylesheet'">
 	<link rel="preload" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;700&display=swap" as="style"
 		onload="this.onload=null;this.rel='stylesheet'">
 	<noscript>
-		<link rel="stylesheet" href="./css/icons.css" />
-		<link rel="stylesheet" href="./css/normalize.css" />
 		<link rel="stylesheet" href="./css/custom.scss" />
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;700&display=swap">
 	</noscript>

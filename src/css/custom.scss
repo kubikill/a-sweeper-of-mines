@@ -1,3 +1,6 @@
+@import './icons.css';
+@import './normalize.css';
+
 .text-center {
   text-align: center;
 }
@@ -8,8 +11,8 @@ p {
 }
 
 input {
-  &[type="number"] {
-    -moz-appearance: textfield;
+  &[type='number'] {
+    appearance: textfield;
 
     &::-webkit-outer-spin-button,
     &::-webkit-inner-spin-button {
@@ -18,7 +21,7 @@ input {
     }
   }
 
-  &[type="range"] {
+  &[type='range'] {
     width: 100%;
   }
 }
@@ -29,18 +32,18 @@ label {
 
 button {
   appearance: none;
+  background-color: #efefef;
   border: 1px solid #767676;
-  background-color: #EFEFEF;
   border-radius: 2px;
 
   &:hover:not(.hint-disabled, .active) {
-    border-color: #4F4F4F;
-    background-color: #E5E5E5;
+    background-color: #e5e5e5;
+    border-color: #4f4f4f;
   }
 
   &:active:not(.hint-disabled, .active) {
-    border-color: hsl(0, 0%, 55%);
     background-color: hsl(0, 0%, 96%);
+    border-color: hsl(0, 0%, 55%);
   }
 
   &.active {
@@ -49,30 +52,30 @@ button {
 }
 
 .range-wrap {
-  position: relative;
   margin: 0 0 24px;
+  position: relative;
 }
 
 .bubble {
+  background-color: #fff;
+  border: 1px solid #000;
+  border-radius: 4px;
   color: #000;
+  left: 50%;
   padding: 1px 6px;
   position: absolute;
-  border-radius: 4px;
   top: 20px;
-  left: 50%;
   transform: translateX(-50%);
-  border: 1px solid #000;
-  background-color: #FFF;
 }
 
 .bubble::after {
   background: #000;
-  content: "";
-  position: absolute;
-  width: 2px;
+  content: '';
   height: 2px;
-  top: -1px;
   left: calc(50% - 1px);
+  position: absolute;
+  top: -1px;
+  width: 2px;
 }
 
 :root {
@@ -80,7 +83,8 @@ button {
   color-scheme: light;
 }
 
-body > main, 
+body > main,
+ 
 body > aside {
   visibility: visible;
 }
@@ -90,29 +94,29 @@ body > aside {
 }
 
 main {
-  display: flex;
-  justify-content: center;
   align-items: center;
+  display: flex;
   flex-direction: column;
   flex-shrink: 1;
   height: 100%;
-  width: 100%;
+  justify-content: center;
   padding: 4px 8px;
+  width: 100%;
 }
 
 #top-row-nav {
   display: flex;
-			justify-content: center;
-			width: 100%;
   font-size: 20px;
+  justify-content: center;
+  width: 100%;
 
   button {
-    display: flex;
-    justify-content: center;
     align-items: center;
+    display: flex;
     height: 40px;
-    width: 40px;
+    justify-content: center;
     margin: 0 2px;
+    width: 40px;
   }
 
   >div {
@@ -121,15 +125,15 @@ main {
 
   #mine-counter,
   #timer {
-    width: 90px;
-    display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin: 0 2px;
-    border: 1px black solid;
+    border: 1px #000 solid;
     border-radius: 8px;
-    padding: 0 2px;
+    display: flex;
     font-family: monospace;
+    justify-content: space-between;
+    margin: 0 2px;
+    padding: 0 2px;
+    width: 90px;
   }
 
   #mine-counter {
@@ -139,156 +143,156 @@ main {
 }
 
 #bottom-row-nav {
+  align-items: center;
   display: flex;
   justify-content: center;
-  align-items: center;
   width: 100%;
 
   button {
-    display: flex;
-    justify-content: center;
     align-items: center;
-    height: 36px;
-    max-width: 100px;
+    display: flex;
     flex-grow: 1;
     font-size: 20px;
+    height: 36px;
+    justify-content: center;
     margin: 0 6px;
+    max-width: 100px;
   }
 }
 
 #playarea {
+  border: 2px #000 solid;
+  border-radius: 8px;
+  font-size: calc(0.75 * var(--tile-size));
+  margin: 8px 0;
   max-height: calc(100% - 96px);
   max-width: 98vw;
-  font-size: calc(0.75 * var(--tile-size));
-  position: relative;
-  border: 2px black solid;
-  margin: 8px 0;
   padding: 8px;
-  border-radius: 8px;
+  position: relative;
   user-select: none;
 
   #column-nums {
-    position: absolute;
-    top: 8px;
-    left: calc(var(--tile-size) + 5px);
+    border-bottom: 3px #000 solid;
     display: flex;
     flex-direction: row;
     height: var(--tile-size);
-    width: calc(100% - 13px - var(--tile-size));
+    left: calc(var(--tile-size) + 5px);
+    overflow: hidden;
     padding-left: 2px;
     padding-right: var(--tile-size);
-    overflow: hidden;
-    border-bottom: 3px black solid;
+    position: absolute;
+    top: 8px;
+    width: calc(100% - 13px - var(--tile-size));
 
     >div {
-      height: var(--tile-size);
-      width: var(--tile-size);
-      display: flex;
-      justify-content: center;
       align-items: center;
+      display: flex;
       flex-shrink: 0;
-      position: relative;
+      height: var(--tile-size);
+      justify-content: center;
       padding-left: 2px;
+      position: relative;
+      width: var(--tile-size);
 
       &:not(:first-child)::after {
-        position: absolute;
-        content: " ";
-        bottom: 0;
-        left: 0;
-        height: calc(var(--tile-size) / 2);
-        width: 2px;
         background-color: #000;
+        bottom: 0;
+        content: ' ';
+        height: calc(var(--tile-size) / 2);
+        left: 0;
+        position: absolute;
+        width: 2px;
       }
     }
   }
 
   #row-nums {
-    position: absolute;
-    top: calc(8px + var(--tile-size));
-    left: 8px;
+    border-right: 3px #000 solid;
     display: flex;
     flex-direction: column;
-    height: calc(100% - 16px - var(--tile-size));
-    width: var(--tile-size);
-    padding-bottom: var(--tile-size);
-    overflow: hidden;
     flex-shrink: 0;
-    border-right: 3px black solid;
+    height: calc(100% - 16px - var(--tile-size));
+    left: 8px;
+    overflow: hidden;
+    padding-bottom: var(--tile-size);
+    position: absolute;
+    top: calc(8px + var(--tile-size));
+    width: var(--tile-size);
 
     >div {
-      height: var(--tile-size);
-      width: var(--tile-size);
-      display: flex;
-      justify-content: center;
       align-items: center;
-      position: relative;
+      display: flex;
+      height: var(--tile-size);
+      justify-content: center;
       padding-right: 4px;
+      position: relative;
+      width: var(--tile-size);
 
       &:not(:first-child)::after {
+        background-color: #000;
+        content: ' ';
+        height: 2px;
         position: absolute;
-        content: " ";
         right: 0;
         top: -1px;
         width: calc(var(--tile-size) / 2);
-        height: 2px;
-        background-color: #000;
       }
     }
   }
 
   #board {
-    position: relative;
-    border-bottom: 2px solid black;
-    border-right: 2px solid black;
-    margin: var(--tile-size) 0 0 var(--tile-size);
+    border-bottom: 2px solid #000;
+    border-right: 2px solid #000;
     height: calc(100% - var(--tile-size));
-    width: calc(100% - var(--tile-size));
+    margin: var(--tile-size) 0 0 var(--tile-size);
     overflow: auto;
+    position: relative;
+    width: calc(100% - var(--tile-size));
 
     &.no-scroll {
       touch-action: none;
     }
 
     &::-webkit-scrollbar-track {
-      border-radius: 10px;
       background-color: #0001;
+      border-radius: 10px;
     }
 
     &::-webkit-scrollbar {
+      background-color: #f5f5f5;
       height: 12px;
       width: 12px;
-      background-color: #F5F5F5;
     }
 
     &::-webkit-scrollbar-thumb {
-      border-radius: 10px;
-      box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
       background-color: #555;
+      border-radius: 10px;
+      box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
     }
 
     >div {
       display: flex;
 
       >div {
-        height: var(--tile-size);
-        width: var(--tile-size);
-        display: flex;
-        justify-content: center;
         align-items: center;
-        border: 1px solid black;
+        border: 1px solid #000;
+        display: flex;
         flex-shrink: 0;
+        height: var(--tile-size);
+        justify-content: center;
         overflow: hidden;
+        width: var(--tile-size);
 
         &:first-child {
-          border-left: none;
+          border-left: initial;
         }
 
-        &:not([data-clickable="false"]) {
+        &:not([data-clickable='false']) {
           cursor: pointer;
         }
 
         &.wrong-tile {
-          background-color: #F00A;
+          background-color: #f00a;
         }
 
         >i {
@@ -297,7 +301,7 @@ main {
       }
 
       &:first-child>div {
-        border-top: none;
+        border-top: initial;
       }
     }
 
@@ -308,24 +312,24 @@ main {
 
   #win-overlay,
   #lose-overlay {
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    display: flex;
     align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    background-color: #000A;
+    background-color: #000a;
     color: #fff;
-    transition: opacity 0.5s;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    left: 0;
     opacity: 0;
+    top: 0;
+    transition: opacity 0.5s;
+    width: 100%;
 
     button {
-      margin: 4px 0;
+      align-items: center;
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      margin: 4px 0;
 
       i {
         margin-right: 8px;
@@ -333,11 +337,11 @@ main {
     }
 
     &.visible {
-      visibility: visible;
       opacity: 1;
+      visibility: visible;
 
       .modal-main {
-        top: 0px;
+        top: 0;
       }
     }
 
@@ -353,49 +357,51 @@ main {
 }
 
 #modals {
+  background-color: #000a;
   height: 100%;
-  width: 100%;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
   position: fixed;
   top: 0;
-  left: 0;
-  visibility: hidden;
-  opacity: 0;
-  background-color: #000A;
   transition: opacity 0.5s;
-  pointer-events: none;
+  visibility: hidden;
+  width: 100%;
+
   &.visible {
-    visibility: visible;
     opacity: 1;
+    visibility: visible;
   }
 
   &.fade {
     animation: fade 0.5s ease;
     visibility: hidden;
   }
+
   * {
     pointer-events: auto;
   }
 }
 
 .modal {
-  display: flex;
-  justify-content: center;
   align-items: center;
-  visibility: hidden;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  left: 0;
   opacity: 0;
-  transition: opacity 0.5s;
   position: fixed;
   top: 0;
-  left: 0;
-  height: 100%;
+  transition: opacity 0.5s;
+  visibility: hidden;
   width: 100%;
 
   &.visible {
-    visibility: visible;
     opacity: 1;
+    visibility: visible;
 
     .modal-main {
-      top: 0px;
+      top: 0;
     }
   }
 
@@ -409,14 +415,14 @@ main {
   }
 
   .modal-main {
-    position: relative;
-    transition: top 0.5s;
-    top: 50px;
-    border: 1px black solid;
-    border-radius: 12px;
     background-color: #fff;
-    padding: 12px 32px 24px;
+    border: 1px #000 solid;
+    border-radius: 12px;
     max-width: 98vw;
+    padding: 12px 32px 24px;
+    position: relative;
+    top: 50px;
+    transition: top 0.5s;
 
     >h2 {
       margin-bottom: 12px;
@@ -424,13 +430,13 @@ main {
     }
 
     .modal-x {
-      position: absolute;
-      top: 2px;
-      right: 2px;
       background-color: transparent;
-      border: none;
-      font-size: 20px;
+      border: initial;
       cursor: pointer;
+      font-size: 20px;
+      position: absolute;
+      right: 2px;
+      top: 2px;
 
       &:hover {
         color: #888;
@@ -440,51 +446,51 @@ main {
 
   #menu-modal-btns {
     display: flex;
-    justify-content: center;
     flex-wrap: wrap;
+    justify-content: center;
     max-width: 248px;
 
     button {
-      width: 120px;
       height: 100px;
-      padding: 32px;
       margin: 2px;
+      padding: 32px;
       position: relative;
+      width: 120px;
 
       i {
+        font-size: 32px;
+        left: 50%;
         position: absolute;
         top: 50%;
-        left: 50%;
         transform: translate(-50%, -50%);
-        font-size: 32px;
       }
 
       .btn-bottom-text {
-        position: absolute;
         bottom: 0;
+        font-size: 18px;
         left: 50%;
+        position: absolute;
         transform: translateX(-50%);
         width: 100%;
-        font-size: 18px;
       }
     }
   }
 }
 
 #xyzzypixel {
+  height: 2px;
+  left: 0;
   position: absolute;
   top: 0;
-  left: 0;
-  height: 2px;
   width: 2px;
 }
 
 #newgamewarning-modal {
   .newgamewarning-btn {
-    margin: 8px 16px 0;
     height: 32px;
-    width: 100%;
+    margin: 8px 16px 0;
     max-width: 100px;
+    width: 100%;
   }
 }
 
@@ -511,15 +517,15 @@ main {
 #settings-modal-main,
 #settings-customBoard {
   display: grid;
+  gap: 4px 0;
   grid-auto-rows: auto;
   grid-template-columns: 140px auto;
   grid-template-rows: auto;
-  gap: 4px 0px;
 }
 
 #settings-customBoard {
-  overflow: hidden;
   height: 0;
+  overflow: hidden;
   transition: height 0.4s ease-out;
 
   &.open {
@@ -534,12 +540,12 @@ hr {
 }
 
 #settings-applywarning {
-  text-align: center;
-  font-weight: 700;
   display: none;
+  font-weight: 700;
+  text-align: center;
 }
 
-#settings-modal input:not([type="range"]) {
+#settings-modal input:not([type='range']) {
   max-width: 100px;
   width: 100%;
 }
@@ -556,12 +562,12 @@ hr {
   }
 
   &::after {
-    content: attr(data-hints);
-    position: absolute;
     bottom: 0;
-    right: 0;
-    line-height: 10px;
+    content: attr(data-hints);
     font-size: 13px;
+    line-height: 10px;
+    position: absolute;
+    right: 0;
   }
 }
 
@@ -572,7 +578,6 @@ hr {
 // Breakpoints
 
 @media only screen and (max-width: 419px) {
-
   #settings-modal-main,
   #settings-customBoard {
     grid-template-columns: auto;
@@ -627,7 +632,7 @@ hr {
 @keyframes slide-out {
   0% {
     opacity: 1;
-    top: 0px;
+    top: 0;
   }
 
   99.9% {
@@ -646,22 +651,22 @@ hr {
 @media screen and (prefers-color-scheme: dark) {
   :root.auto {
     background-color: #202124;
-    color: #CCC;
+    color: #ccc;
     color-scheme: dark;
 
     button {
-      border: 1px solid #666;
       background-color: #444;
-      color: #CCC;
+      border: 1px solid #666;
+      color: #ccc;
 
       &:hover:not(.hint-disabled, .active) {
-        border-color: #666;
         background-color: #515151;
+        border-color: #666;
       }
 
       &:active:not(.hint-disabled, .active) {
-        border-color: #666;
         background-color: #393939;
+        border-color: #666;
       }
 
       &.active {
@@ -670,8 +675,6 @@ hr {
     }
 
     #top-row-nav {
-
-
       #mine-counter,
       #timer {
         border-color: #888;
@@ -709,9 +712,9 @@ hr {
         }
 
         &::-webkit-scrollbar-thumb {
-          border-radius: 10px;
-          box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
           background-color: #555;
+          border-radius: 10px;
+          box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
         }
 
         &::-webkit-scrollbar-corner {
@@ -725,11 +728,11 @@ hr {
     }
 
     .modal .modal-main {
-      border-color: #888;
       background-color: #202124;
+      border-color: #888;
 
       .modal-x {
-        color: #CCC;
+        color: #ccc;
 
         &:hover {
           color: #888;
@@ -738,9 +741,9 @@ hr {
     }
 
     .bubble {
-      color: #CCC;
-      border-color: #888;
       background-color: #202124;
+      border-color: #888;
+      color: #ccc;
 
       &::after {
         background-color: #888;
@@ -750,8 +753,8 @@ hr {
     input,
     select {
       background-color: #202124 !important;
-      color: #CCC;
       border: 1px solid #666;
+      color: #ccc;
     }
 
     #hint-btn {
@@ -773,22 +776,22 @@ hr {
 
 :root.dark {
   background-color: #202124;
-  color: #CCC;
+  color: #ccc;
   color-scheme: dark;
 
   button {
-    border: 1px solid #666;
     background-color: #444;
-    color: #CCC;
+    border: 1px solid #666;
+    color: #ccc;
 
     &:hover:not(.hint-disabled, .active) {
-      border-color: #666;
       background-color: #515151;
+      border-color: #666;
     }
 
     &:active:not(.hint-disabled, .active) {
-      border-color: #666;
       background-color: #393939;
+      border-color: #666;
     }
 
     &.active {
@@ -797,7 +800,6 @@ hr {
   }
 
   #top-row-nav {
-
     #mine-counter,
     #timer {
       border-color: #888;
@@ -835,9 +837,9 @@ hr {
       }
 
       &::-webkit-scrollbar-thumb {
-        border-radius: 10px;
-        box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
         background-color: #555;
+        border-radius: 10px;
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
       }
 
       &::-webkit-scrollbar-corner {
@@ -851,11 +853,11 @@ hr {
   }
 
   .modal .modal-main {
-    border-color: #888;
     background-color: #202124;
+    border-color: #888;
 
     .modal-x {
-      color: #CCC;
+      color: #ccc;
 
       &:hover {
         color: #888;
@@ -864,9 +866,9 @@ hr {
   }
 
   .bubble {
-    color: #CCC;
-    border-color: #888;
     background-color: #202124;
+    border-color: #888;
+    color: #ccc;
 
     &::after {
       background-color: #888;
@@ -876,8 +878,8 @@ hr {
   input,
   select {
     background-color: #202124 !important;
-    color: #CCC;
     border: 1px solid #666;
+    color: #ccc;
   }
 
   #hint-btn {
