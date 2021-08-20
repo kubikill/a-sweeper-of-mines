@@ -107,17 +107,8 @@ const gameVars = {
 	columnMineCount: [],
 };
 
-let settings = {
-	board: {
-		rows: 10,
-		columns: 10,
-		numOfMines: 20,
-	},
-	boardSize: "small",
-	maxMines: 50,
-	tileSize: 32,
-	theme: "auto"
-};
+const NUMBERS_ONLY_REGEX = /^[0-9]+$/g;
+const ROOT = document.documentElement;
 
 const boardSizes = {
 	small: {
@@ -141,6 +132,18 @@ const boardSizes = {
 		numOfMines: 200
 	}
 }
+
+let settings = {
+	board: {
+		rows: 10,
+		columns: 10,
+		numOfMines: 20,
+	},
+	boardSize: "small",
+	maxMines: 50,
+	tileSize: 32,
+	theme: "auto"
+};
 
 let statistics = {
 	small: {
@@ -213,7 +216,7 @@ function populateBoardWithMines(firstTileRow, firstTileColumn, numOfMines) {
 	gameVars.columnMineCount = new Array(gameVars.board.columns).fill(0);
 
 	let firstTile = values.findIndex((tile) => {
-		return tile.row == firstTileRow && tile.column == firstTileColumn;
+		return tile.row === firstTileRow && tile.column === firstTileColumn;
 	});
 
 	if (firstTile != -1) {
@@ -257,7 +260,7 @@ function countNearbyMines(row, column) {
 	let count = 0;
 	for (let i = -1; i <= 1; i++) {
 		for (let j = -1; j <= 1; j++) {
-			if (i == 0 && j == 0) {
+			if (i === 0 && j === 0) {
 				continue;
 			}
 			count += checkIfTileHasMine(row + i, column + j);
@@ -272,8 +275,8 @@ function getTileElement(row, column) {
 	);
 }
 
-function tileClick(row, column) {
-	if (gameVars.state == "initial") {
+function handleTileClick(row, column) {
+	if (gameVars.state === "initial") {
 		gameVars.state = "underway";
 		populateBoardWithMines(row, column, gameVars.board.numOfMines);
 		displayBorderNums();
@@ -299,8 +302,8 @@ function tileClick(row, column) {
 		if (gameVars.xyzzyActivated) {
 			xyzzyInit();
 		}
-	} else if (gameVars.state == "underway") {
-		if (gameVars.hintMode == true) {
+	} else if (gameVars.state === "underway") {
+		if (gameVars.hintMode === true) {
 			uncoverTile(row, column, true);
 			gameVars.hints -= 1;
 			DOM.nav.hintBtn.dataset.hints = gameVars.hints;
@@ -316,22 +319,22 @@ function tileClick(row, column) {
 	}
 }
 
-function tileMark(row, column) {
+function markTile(row, column) {
 	// Mark tile only if game is in progress and the tile is not uncovered
-	if (gameVars.state == "underway" && !board[row][column].uncovered) {
+	if (gameVars.state === "underway" && !board[row][column].uncovered) {
 		if (!board[row][column].markedAsEmpty) {
-			if (gameVars.markMode == "none") {
+			if (gameVars.markMode === "none") {
 				gameVars.markMode = "mark";
 			}
-			if (gameVars.markMode == "mark") {
+			if (gameVars.markMode === "mark") {
 				board[row][column].markedAsEmpty = true;
 				getTileElement(row, column).innerHTML = '<i class="icon-flag"></i>';
 			}
 		} else {
-			if (gameVars.markMode == "none") {
+			if (gameVars.markMode === "none") {
 				gameVars.markMode = "remove";
 			}
-			if (gameVars.markMode == "remove") {
+			if (gameVars.markMode === "remove") {
 				board[row][column].markedAsEmpty = false;
 				getTileElement(row, column).innerHTML = "";
 			}
@@ -358,14 +361,14 @@ function uncoverTile(row, column, fromMineClick = false, override = false) {
 		board[row][column].uncovered = true;
 		for (let i = -1; i <= 1; i++) {
 			for (let j = -1; j <= 1; j++) {
-				if (i == 0 && j == 0) {
+				if (i === 0 && j === 0) {
 					continue;
 				}
 				uncoverTile(row + i, column + j, true, override);
 			}
 		}
 		gameVars.minesLeft--;
-		if (gameVars.minesLeft == 0 && gameVars.state == "underway") {
+		if (gameVars.minesLeft === 0 && gameVars.state === "underway") {
 			winGame();
 		}
 	} else if (fromMineClick) {
@@ -375,7 +378,7 @@ function uncoverTile(row, column, fromMineClick = false, override = false) {
 		getTileElement(row, column).dataset.clickable = "false";
 	} else if (
 		!board[row][column].markedAsEmpty &&
-		gameVars.state == "underway"
+		gameVars.state === "underway"
 	) {
 		getTileElement(row, column).classList.add("wrong-tile");
 		loseGame();
@@ -450,7 +453,7 @@ function loseGame() {
 	clearInterval(gameVars.clockInterval);
 }
 
-function uncoverBoard() {
+function uncoverEntireBoard() {
 	for (let row = 0; row < board.length; row++) {
 		for (let column = 0; column < board[row].length; column++) {
 			if (board[row][column].hasMine) {
@@ -525,7 +528,7 @@ function showStats(board) {
 let multiTouch = false;
 let markTouch = false;
 
-function displayBoard() {
+function renderBoard() {
 	let html = "";
 	for (let row = 0; row < board.length; row++) {
 		html += `<div>`;
@@ -544,9 +547,9 @@ function displayBoard() {
 			if (!evt.isPrimary || multiTouch) {
 				multiTouch = true;
 				return;
-			} else if (evt.button == 2 || gameVars.clickSwap) {
+			} else if (evt.button === 2 || gameVars.clickSwap) {
 				markTouch = true;
-				tileMark(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
+				markTile(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
 			}
 			evt.target.releasePointerCapture(evt.pointerId);
 		})
@@ -558,16 +561,16 @@ function displayBoard() {
 				return;
 			}
 			markTouch = false;
-			if (!gameVars.clickSwap && evt.button == 0) {
-				tileClick(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
+			if (!gameVars.clickSwap && evt.button === 0) {
+				handleTileClick(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
 			}
 		});
 		tile.addEventListener("pointerenter", (evt) => {
 			if (!evt.isPrimary) {
 				return;
 			}
-			if (markTouch || evt.buttons == 2) {
-				tileMark(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
+			if (markTouch || evt.buttons === 2) {
+				markTile(parseInt(tile.dataset.row), parseInt(tile.dataset.column));
 			}
 		});
 		tile.addEventListener("pointercancel", evt => {
@@ -596,7 +599,7 @@ function newGame() {
 	DOM.nav.hintBtn.classList.remove("hint-active");
 	DOM.nav.hintBtn.classList.remove("hint-disabled");
 	createEmptyBoard();
-	displayBoard();
+	renderBoard();
 	displayEmptyBorderNums();
 	gameVars.state = "initial";
 	clearInterval(gameVars.clockInterval);
@@ -745,22 +748,20 @@ DOM.playarea.loseOverlay.newGameBtn.addEventListener("click", () => {
 DOM.playarea.loseOverlay.viewBoardBtn.addEventListener("click", () => {
 	DOM.playarea.loseOverlay.container.classList.add("fade");
 	DOM.playarea.loseOverlay.container.classList.remove("visible");
-	uncoverBoard();
+	uncoverEntireBoard();
 });
 
 // Settings event listeners
 
 DOM.modals.settings.boardSize.addEventListener("change", evt => {
 	settings.boardSize = evt.target.value;
-	if (gameVars.state == "underway") {
+	if (gameVars.state === "underway") {
 		DOM.modals.settings.boardApplyWarning.style.display = "block";
 	}
 })
 
-const numbersOnlyRegex = /^[0-9]+$/g;
-
 DOM.modals.settings.customBoard.columns.addEventListener("input", evt => {
-	evt.target.value = evt.target.value.match(numbersOnlyRegex);
+	evt.target.value = evt.target.value.match(NUMBERS_ONLY_REGEX);
 	if (!evt.target.value) {
 		settings.board.columns = 5;
 	} else if (evt.target.value > 100 && !customBoardUnlimited) {
@@ -770,7 +771,7 @@ DOM.modals.settings.customBoard.columns.addEventListener("input", evt => {
 		settings.board.columns = parseInt(evt.target.value);
 	}
 	calculateMaxMines();
-	if (gameVars.state == "underway") {
+	if (gameVars.state === "underway") {
 		DOM.modals.settings.boardApplyWarning.style.display = "block";
 	}
 })
@@ -782,14 +783,14 @@ DOM.modals.settings.customBoard.columns.addEventListener("blur", evt => {
 	}
 	settings.board.columns = parseInt(evt.target.value);
 	calculateMaxMines();
-	if (gameVars.state == "underway") {
+	if (gameVars.state === "underway") {
 		DOM.modals.settings.boardApplyWarning.style.display = "block";
 	}
 })
 
 DOM.modals.settings.customBoard.rows.addEventListener("input", evt => {
-	evt.target.value = evt.target.value.match(numbersOnlyRegex);
-	if (evt.target.value == "") {
+	evt.target.value = evt.target.value.match(NUMBERS_ONLY_REGEX);
+	if (evt.target.value === "") {
 		settings.board.rows = 5;
 	} else if (evt.target.value > 100 && !customBoardUnlimited) {
 		evt.target.value = 100;
@@ -798,19 +799,19 @@ DOM.modals.settings.customBoard.rows.addEventListener("input", evt => {
 		settings.board.rows = parseInt(evt.target.value);
 	}
 	calculateMaxMines();
-	if (gameVars.state == "underway") {
+	if (gameVars.state === "underway") {
 		DOM.modals.settings.boardApplyWarning.style.display = "block";
 	}
 })
 DOM.modals.settings.customBoard.rows.addEventListener("blur", evt => {
-	if (evt.target.value == "" || evt.target.value < 5) {
+	if (evt.target.value === "" || evt.target.value < 5) {
 		evt.target.value = 5;
 	} else if (evt.target.value > 100 && !customBoardUnlimited) {
 		evt.target.value = 100;
 	}
 	settings.board.rows = parseInt(evt.target.value);
 	calculateMaxMines();
-	if (gameVars.state == "underway") {
+	if (gameVars.state === "underway") {
 		DOM.modals.settings.boardApplyWarning.style.display = "block";
 	}
 })
@@ -820,7 +821,7 @@ DOM.modals.settings.customBoard.numOfMines.addEventListener("input", evt => {
 		evt.target.value = settings.maxMines;
 	}
 	settings.board.numOfMines = parseInt(evt.target.value);
-	if (gameVars.state == "underway") {
+	if (gameVars.state === "underway") {
 		DOM.modals.settings.boardApplyWarning.style.display = "block";
 	} else {
 		gameVars.board.numOfMines = parseInt(evt.target.value);
@@ -832,7 +833,7 @@ DOM.modals.settings.customBoard.numOfMines.addEventListener("blur", evt => {
 		evt.target.value = 2;
 	}
 	settings.board.numOfMines = parseInt(evt.target.value);
-	if (gameVars.state == "underway") {
+	if (gameVars.state === "underway") {
 		DOM.modals.settings.boardApplyWarning.style.display = "block";
 	} else {
 		gameVars.board.numOfMines = parseInt(evt.target.value);
@@ -858,7 +859,7 @@ function calculateMaxMines() {
 // Handle showing custom board sizes
 DOM.modals.settings.boardSize.addEventListener("change", evt => {
 	DOM.modals.settings.customBoard.container.style.height = `${DOM.modals.settings.customBoard.container.scrollHeight}px`;
-	if (evt.target.value == "custom") {
+	if (evt.target.value === "custom") {
 		DOM.modals.settings.customBoard.container.classList.add("open");
 		DOM.modals.settings.customBoard.container.addEventListener("transitionend", () => {
 			DOM.modals.settings.customBoard.container.style.removeProperty("height");
@@ -873,27 +874,25 @@ DOM.modals.settings.boardSize.addEventListener("change", evt => {
 	}
 })
 
-const root = document.documentElement;
-
 DOM.modals.settings.tileSize.addEventListener("input", evt => {
 	settings.tileSize = evt.target.value;
-	root.style.setProperty('--tile-size', `${evt.target.value}px`);
+	ROOT.style.setProperty('--tile-size', `${evt.target.value}px`);
 })
 
 DOM.modals.settings.theme.addEventListener("change", evt => {
 	settings.theme = evt.target.value;
 	switch (settings.theme) {
 		case "auto":
-			root.classList.add("auto");
-			root.classList.remove("dark");
+			ROOT.classList.add("auto");
+			ROOT.classList.remove("dark");
 			break;
 		case "light":
-			root.classList.remove("auto");
-			root.classList.remove("dark");
+			ROOT.classList.remove("auto");
+			ROOT.classList.remove("dark");
 			break;
 		case "dark":
-			root.classList.add("dark");
-			root.classList.remove("auto");
+			ROOT.classList.add("dark");
+			ROOT.classList.remove("auto");
 			break;
 	}
 })
@@ -906,7 +905,7 @@ let tempStats = localStorage.getItem("sweeperofmines-statistics");
 if (tempSettings != null) {
 	settings = JSON.parse(tempSettings);
 	DOM.modals.settings.boardSize.value = settings.boardSize;
-	if (settings.boardSize == "custom") {
+	if (settings.boardSize === "custom") {
 		DOM.modals.settings.customBoard.container.classList.add("open");
 	}
 	DOM.modals.settings.customBoard.columns.value = settings.board.columns;
@@ -916,7 +915,7 @@ if (tempSettings != null) {
 	DOM.modals.settings.tileSize.value = settings.tileSize;
 	DOM.modals.settings.theme.value = settings.theme;
 	DOM.modals.settings.theme.dispatchEvent(new Event("change"));
-	root.style.setProperty('--tile-size', `${settings.tileSize}px`);
+	ROOT.style.setProperty('--tile-size', `${settings.tileSize}px`);
 }
 if (tempStats != null) {
 	statistics = JSON.parse(tempStats);
@@ -962,7 +961,7 @@ let xyzzyPassword = "xyzzy";
 let passwordPosition = 0;
 let xyzzyPixel = byId("xyzzypixel");
 document.onkeydown = (evt) => {
-	if (evt.key == xyzzyPassword[passwordPosition]) {
+	if (evt.key === xyzzyPassword[passwordPosition]) {
 		passwordPosition++;
 	} else {
 		passwordPosition = 0;
@@ -971,12 +970,12 @@ document.onkeydown = (evt) => {
 		xyzzyInit();
 		gameVars.xyzzyActivated = true;
 		document.onkeydown = (evt) => {
-			if (evt.key == "Shift") {
+			if (evt.key === "Shift") {
 				gameVars.xyzzyShift = true;
 			}
 		};
 		document.onkeyup = (evt) => {
-			if (evt.key == "Shift") {
+			if (evt.key === "Shift") {
 				gameVars.xyzzyShift = false;
 			}
 		};

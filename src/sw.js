@@ -4,7 +4,6 @@ self.addEventListener('install', function (event) {
         return cache.addAll([
           "./",
           new URL("./css/custom.scss", import.meta.url),
-          new URL("./js/main.js", import.meta.url),
           new URL("./fonts/icons.ttf", import.meta.url)
         ]);
       }),
