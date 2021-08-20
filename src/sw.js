@@ -3,12 +3,9 @@ self.addEventListener('install', function (event) {
       caches.open('sweeper-of-mines').then(function (cache) {
         return cache.addAll([
           "./",
-          "./index.html",
-          "./css/icons.css",
-          "./css/normalize.css",
-          "./css/custom.scss",
-          "./js/main.js",
-          "./fonts/icons.ttf"
+          new URL("./css/custom.scss", import.meta.url),
+          new URL("./js/main.js", import.meta.url),
+          new URL("./fonts/icons.ttf", import.meta.url)
         ]);
       }),
     );

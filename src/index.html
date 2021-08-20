@@ -25,7 +25,7 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<script type="module">
 		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.register(new URL('./sw.js', import.meta.url));
+			navigator.serviceWorker.register(new URL('./sw.js', import.meta.url), {type: 'module'});
 		};
 	</script>
 	<link rel="preload" href="./css/custom.scss" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -36,56 +36,57 @@
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;700&display=swap">
 	</noscript>
 	<style>
-		* {
-			box-sizing: border-box;
-		}
+    * {
+      box-sizing: border-box;
+    }
 
-		:root {
-			--tile-size: 32px;
-			--font-size: 24px;
-			font-family: 'Rubik', sans-serif;
-		}
+    :root {
+      --tile-size: 32px;
+      --font-size: 24px;
+      font-family: 'Rubik', sans-serif;
+    }
 
-		html,
-		body {
-			height: 100%;
-			width: 100%;
-			overflow: hidden;
-			position: fixed;
-		}
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+      position: fixed;
+      width: 100%;
+    }
 
-		#loading-screen {
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-			border: 2px solid black;
-			border-radius: 8px;
-			padding: 16px;
-			font-size: 24px;
-		}
+    #loading-screen {
+      border: 2px solid #000;
+      border-radius: 8px;
+      font-size: 24px;
+      left: 50%;
+      padding: 16px;
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
 
-		@media screen and (prefers-color-scheme: dark) {
-			.auto {
-				background-color: #202124;
-				color: #CCC;
-				color-scheme: dark;
-			}
-			#loading-screen {
-					border-color: #EEE;
-			}
-		}
+    @media screen and (prefers-color-scheme: dark) {
+      .auto {
+        background-color: #202124;
+        color: #ccc;
+        color-scheme: dark;
+      }
 
-		main,
-		aside {
-			visibility: hidden;
-		}
+      #loading-screen {
+        border-color: #eee;
+      }
+    }
 
-		#win-overlay,
-		#lose-overlay {
-			position: absolute;
-			visibility: hidden;
-		}
+    main,
+    aside {
+      visibility: hidden;
+    }
+
+    #win-overlay,
+    #lose-overlay {
+      position: absolute;
+      visibility: hidden;
+    }
 	</style>
 	<script src="./js/main.js" defer></script>
 </head>
